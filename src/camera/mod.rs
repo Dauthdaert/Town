@@ -22,9 +22,13 @@ fn setup_camera(mut commands: Commands) {
             input_map: InputMap::default()
                 .insert(SingleAxis::mouse_wheel_y(), CameraMovement::Zoom)
                 .insert(KeyCode::A, CameraMovement::PanLeft)
+                .insert(KeyCode::Left, CameraMovement::PanLeft)
                 .insert(KeyCode::D, CameraMovement::PanRight)
+                .insert(KeyCode::Right, CameraMovement::PanRight)
                 .insert(KeyCode::W, CameraMovement::PanUp)
+                .insert(KeyCode::Up, CameraMovement::PanUp)
                 .insert(KeyCode::S, CameraMovement::PanDown)
+                .insert(KeyCode::Down, CameraMovement::PanDown)
                 .build(),
         });
 }
