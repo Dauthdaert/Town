@@ -38,6 +38,57 @@ impl ChunkManager {
     }
 }
 
+pub fn spawn_chunks_around_camera(
+    mut commands: Commands,
+    tilemap_assets: Res<TilemapAssets>,
+    camera_query: Query<(&Transform, &OrthographicProjection), With<Camera2d>>,
+    mut chunk_manager: ResMut<ChunkManager>,
+    mut global_rng: ResMut<GlobalRng>,
+) {
+    let (camera_transform, camera_ortho) = camera_query.single();
+    let chunk_spawn_distance: i32 = ((camera_ortho.right - camera_ortho.left) * 0.5 * camera_ortho.scale
+        / (CHUNK_SIZE.x as f32 * TILE_SIZE.x))
+        .ceil() as i32
+        + 1;
+
+    let camera_chunk_pos = camera_pos_to_chunk_pos(&camera_transform.translation.xy());
+    for y in (camera_chunk_pos.y - chunk_spawn_distance)..(camera_chunk_pos.y + chunk_spawn_distance) {
+        for x in (camera_chunk_pos.x - chunk_spawn_distance)..(camera_chunk_pos.x + chunk_spawn_distance) {
+            if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
+                chunk_manager.spawned_chunks.insert(IVec2::new(x, y));
+                spawn_chunk(
+                    &mut commands,
+                    &tilemap_assets,
+                    &mut chunk_manager,
+                    IVec2::new(x, y),
+                    &mut global_rng,
+                );
+            }
+        }
+    }
+}
+
+pub fn despawn_chunks_outside_camera(
+    mut commands: Commands,
+    camera_query: Query<(&Transform, &OrthographicProjection), With<Camera2d>>,
+    chunks_query: Query<(Entity, &Transform), With<TileStorage>>,
+    mut chunk_manager: ResMut<ChunkManager>,
+) {
+    let (camera_transform, camera_ortho) = camera_query.single();
+    let chunk_remove_distance: f32 = (camera_ortho.right - camera_ortho.left) * camera_ortho.scale;
+
+    for (entity, chunk_transform) in chunks_query.iter() {
+        let chunk_pos = chunk_transform.translation.xy();
+        let distance = camera_transform.translation.xy().distance(chunk_pos);
+        if distance > chunk_remove_distance {
+            let x = (chunk_pos.x as f32 / (CHUNK_SIZE.x as f32 * TILE_SIZE.x)).floor() as i32;
+            let y = (chunk_pos.y as f32 / (CHUNK_SIZE.y as f32 * TILE_SIZE.y)).floor() as i32;
+            chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
 fn spawn_chunk(
     commands: &mut Commands,
     tilemap_assets: &TilemapAssets,
@@ -74,7 +125,7 @@ fn spawn_chunk(
         }
     }
 
-    let transform = Transform::from_translation(Vec3::new(
+    let chunk_transform = Transform::from_translation(Vec3::new(
         chunk_pos.x as f32 * CHUNK_SIZE.x as f32 * TILE_SIZE.x,
         chunk_pos.y as f32 * CHUNK_SIZE.y as f32 * TILE_SIZE.y,
         0.0,
@@ -85,7 +136,7 @@ fn spawn_chunk(
         storage: tile_storage,
         texture: TilemapTexture(tilemap_assets.tiles.clone()),
         tile_size: TILE_SIZE,
-        transform,
+        transform: chunk_transform,
         ..Default::default()
     });
 }
@@ -99,55 +150,4 @@ fn camera_pos_to_chunk_pos(camera_pos: &Vec2) -> IVec2 {
 
 fn chunk_xy_to_idx(x: u32, y: u32) -> usize {
     (y * CHUNK_SIZE.x + x) as usize
-}
-
-pub fn spawn_chunks_around_camera(
-    mut commands: Commands,
-    tilemap_assets: Res<TilemapAssets>,
-    camera_query: Query<(&Transform, &OrthographicProjection), With<Camera>>,
-    mut chunk_manager: ResMut<ChunkManager>,
-    mut global_rng: ResMut<GlobalRng>,
-) {
-    let (camera_transform, camera_ortho) = camera_query.single();
-    let chunk_spawn_distance: i32 = ((camera_ortho.right - camera_ortho.left) * 0.5 * camera_ortho.scale
-        / (CHUNK_SIZE.x as f32 * TILE_SIZE.x))
-        .ceil() as i32
-        + 1;
-
-    let camera_chunk_pos = camera_pos_to_chunk_pos(&camera_transform.translation.xy());
-    for y in (camera_chunk_pos.y - chunk_spawn_distance)..(camera_chunk_pos.y + chunk_spawn_distance) {
-        for x in (camera_chunk_pos.x - chunk_spawn_distance)..(camera_chunk_pos.x + chunk_spawn_distance) {
-            if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
-                chunk_manager.spawned_chunks.insert(IVec2::new(x, y));
-                spawn_chunk(
-                    &mut commands,
-                    &tilemap_assets,
-                    &mut chunk_manager,
-                    IVec2::new(x, y),
-                    &mut global_rng,
-                );
-            }
-        }
-    }
-}
-
-pub fn despawn_chunks_outside_camera(
-    mut commands: Commands,
-    camera_query: Query<(&Transform, &OrthographicProjection), With<Camera>>,
-    chunks_query: Query<(Entity, &Transform), With<TileStorage>>,
-    mut chunk_manager: ResMut<ChunkManager>,
-) {
-    let (camera_transform, camera_ortho) = camera_query.single();
-    let chunk_remove_distance: f32 = (camera_ortho.right - camera_ortho.left) * camera_ortho.scale;
-
-    for (entity, chunk_transform) in chunks_query.iter() {
-        let chunk_pos = chunk_transform.translation.xy();
-        let distance = camera_transform.translation.xy().distance(chunk_pos);
-        if distance > chunk_remove_distance {
-            let x = (chunk_pos.x as f32 / (CHUNK_SIZE.x as f32 * TILE_SIZE.x)).floor() as i32;
-            let y = (chunk_pos.y as f32 / (CHUNK_SIZE.y as f32 * TILE_SIZE.y)).floor() as i32;
-            chunk_manager.spawned_chunks.remove(&IVec2::new(x, y));
-            commands.entity(entity).despawn_recursive();
-        }
-    }
 }
