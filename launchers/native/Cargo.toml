@@ -5,7 +5,7 @@ edition = "2021"
 workspace = "../.."
 
 [dependencies]
-my-game = { package = "my-game", path = "../.." }
-bevy = "0.8"
+town = { package = "town", path = "../.." }
+bevy = { version = "0.8", default-features = false }
 image = "0.24.3"
 winit = "0.26.1"

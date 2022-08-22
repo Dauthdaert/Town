@@ -1,5 +1,5 @@
 [package]
-name = "my-game"
+name = "town"
 version = "0.1.0"
 edition = "2021"
 
@@ -20,7 +20,32 @@ codegen-units = 1
 opt-level = 'z'
 lto = true
 
+[features]
+default = [
+    "bevy/bevy_winit",
+    "bevy/bevy_render",
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_sprite",
+    "bevy/bevy_text",
+    "bevy/bevy_ui",
+    "bevy/png",
+    "bevy/x11",
+    "bevy_kira_audio/ogg",
+]
+
+dev = [
+    "bevy/dynamic",
+]
+
 [dependencies]
-bevy = "0.8.0"
+bevy = { version = "0.8.*", default-features = false }
+iyes_loopless = "0.7.*"
+bevy_kira_audio = "0.12.*"
+bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
+leafwing-input-manager = "0.5.*"
+bevy-inspector-egui = "0.12.*"
+bevy_turborand = "0.3.0"
+bevy_asset_loader = "0.12.1"
+if_chain = "1.0.2"
 image = "0.24.3"
 winit = "0.26.1"
