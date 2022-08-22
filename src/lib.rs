@@ -1,24 +1,34 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, render::texture::ImageSettings};
+use bevy_ecs_tilemap::prelude::*;
+use bevy_turborand::RngPlugin;
 
-pub const LAUNCHER_TITLE: &str = "Bevy Shell - Template";
+pub const LAUNCHER_TITLE: &str = "Town";
+
+mod camera;
+mod map_gen;
 
 pub fn app() -> App {
     let mut app = App::new();
+
+    //Add bevy resources
     app.insert_resource(WindowDescriptor {
         title: LAUNCHER_TITLE.to_string(),
         canvas: Some("#bevy".to_string()),
         fit_canvas_to_parent: true,
         ..Default::default()
     })
-    .add_plugins(DefaultPlugins)
-    .add_startup_system(load_icon);
-    app
-}
+    .insert_resource(ImageSettings::default_nearest());
 
-fn load_icon(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(Camera2dBundle::default());
-    commands.spawn_bundle(SpriteBundle {
-        texture: asset_server.load("bevy.png"),
-        ..default()
-    });
+    //Add bevy and dependency plugins
+    app.add_plugins(DefaultPlugins)
+        .add_plugin(TilemapPlugin)
+        .add_plugin(RngPlugin::default());
+
+    //Add custom plugins
+    app.add_plugin(camera::CameraPlugin);
+    app.add_plugin(map_gen::MapGenPlugin);
+
+    //Add custom resources and systems
+
+    app
 }
