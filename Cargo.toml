@@ -47,5 +47,6 @@ bevy-inspector-egui = "0.12.*"
 bevy_turborand = "0.3.0"
 bevy_asset_loader = "0.12.1"
 if_chain = "1.0.2"
+noise = { git = "https://github.com/Razaekel/noise-rs.git" }
 image = "0.24.3"
 winit = "0.26.1"

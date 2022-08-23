@@ -4,9 +4,8 @@ use bevy::{
     utils::{HashMap, HashSet},
 };
 use bevy_ecs_tilemap::prelude::*;
-use bevy_turborand::{DelegatedRng, GlobalRng};
 
-use super::{TilemapAssets, TILE_SIZE};
+use super::{generator::MapGenerator, TilemapAssets, TILE_SIZE};
 
 const CHUNK_SIZE: TilemapSize = TilemapSize { x: 6, y: 6 };
 
@@ -43,7 +42,7 @@ pub fn spawn_chunks_around_camera(
     tilemap_assets: Res<TilemapAssets>,
     camera_query: Query<(&Transform, &OrthographicProjection), With<Camera2d>>,
     mut chunk_manager: ResMut<ChunkManager>,
-    mut global_rng: ResMut<GlobalRng>,
+    map_generator: Res<MapGenerator>,
 ) {
     let (camera_transform, camera_ortho) = camera_query.single();
     let chunk_spawn_distance: i32 = ((camera_ortho.right - camera_ortho.left) * 0.5 * camera_ortho.scale
@@ -61,7 +60,7 @@ pub fn spawn_chunks_around_camera(
                     &tilemap_assets,
                     &mut chunk_manager,
                     IVec2::new(x, y),
-                    &mut global_rng,
+                    &map_generator,
                 );
             }
         }
@@ -94,7 +93,7 @@ fn spawn_chunk(
     tilemap_assets: &TilemapAssets,
     chunk_manager: &mut ChunkManager,
     chunk_pos: IVec2,
-    global_rng: &mut GlobalRng,
+    map_generator: &MapGenerator,
 ) {
     let tilemap_entity = commands.spawn().id();
     let mut tile_storage = TileStorage::empty(CHUNK_SIZE);
@@ -105,7 +104,12 @@ fn spawn_chunk(
 
             //If no tile exists, generate one
             if tile_texture.is_none() {
-                let result = global_rng.u8(0..=5);
+                let result = map_generator
+                    .generate(
+                        chunk_pos.x * CHUNK_SIZE.x as i32 + x as i32,
+                        chunk_pos.y * CHUNK_SIZE.y as i32 + y as i32,
+                    )
+                    .texture();
                 chunk_manager.set_tile_texture(chunk_pos, x, y, result);
                 tile_texture = Some(result);
             }
