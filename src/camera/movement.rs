@@ -46,7 +46,7 @@ pub fn movement(
         ortho.scale += zoom_delta * 0.05;
     }
 
-    ortho.scale = ortho.scale.clamp(0.4, 1.5);
+    ortho.scale = ortho.scale.clamp(0.4, 1.0);
 
     let z = transform.translation.z;
     transform.translation += time.delta_seconds() * direction * 500.;
