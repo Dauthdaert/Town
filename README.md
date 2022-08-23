@@ -62,7 +62,7 @@ There are two ways to host the WASM build of your Bevy game, with Docker or GitH
 
 ### GitHub Pages
 To automatically serve your WASM bundle like [our demo](https://kurbos.github.io/bevy-shell-template/), here are the steps:
-- Modify the [GitHub Pages GitHub Action file](.github/workflows/release-gh-pages.yml)'s variarable `PUBLIC_URL` with the slug for your GitHub Pages hosting. 
+- Modify the [GitHub Pages GitHub Action file](.github/workflows/release-gh-pages.yml)'s variarable `PUBLIC_URL` with the slug for your GitHub Pages hosting.
   - If the repo name is the same as the repo owner, this should be `/`, otherwise, it will should be `/<repository-name>/` (e.g. `/bevy-shell-template/`)
 - *Optional*: Delete the [DockerHub GitHub Action](.github/workflows/release-dockerhub.yml), as you probably don't need it.
 - [Cut a release](#release-cutting) and wait for pipeline completion

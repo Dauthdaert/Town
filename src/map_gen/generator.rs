@@ -64,7 +64,7 @@ impl MapGenerator {
             + 0.06 * self.noise_e(16.0 * nx + 42.4, 16.0 * ny + 51.6)
             + 0.03 * self.noise_e(32.0 * nx + 98.2, 32.0 * ny + 105.2);
 
-        e = e / (1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03);
+        e /= 1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03;
         e = f64::powi(e * 1.2, 3);
 
         let mut m = 1.00 * self.noise_m(1.0 * nx, 1.0 * ny)
@@ -73,7 +73,7 @@ impl MapGenerator {
             + 0.33 * self.noise_m(8.0 * nx + 17.6, 8.0 * ny + 29.1)
             + 0.33 * self.noise_m(16.0 * nx + 38.9, 16.0 * ny + 36.8)
             + 0.50 * self.noise_m(32.0 * nx + 114.5, 32.0 * ny + 85.2);
-        m = m / (1.00 + 0.75 + 0.33 + 0.33 + 0.33 + 0.50);
+        m /= 1.00 + 0.75 + 0.33 + 0.33 + 0.33 + 0.50;
 
         self.biome(e, m)
     }
@@ -132,7 +132,7 @@ impl MapGenerator {
         if m < 0.66 {
             return Biomes::TropicalSeasonalForest;
         }
-        return Biomes::TropicalRainForest;
+        Biomes::TropicalRainForest
     }
 
     fn noise_e(&self, n_x: f64, n_y: f64) -> f64 {
