@@ -13,6 +13,12 @@ members = [
 name="native-launcher"
 path="launchers/native/src/main.rs"
 
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1
+
 # Optimizations for WASM
 [profile.release]
 panic = 'abort'
