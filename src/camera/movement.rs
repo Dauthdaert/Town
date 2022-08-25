@@ -10,6 +10,9 @@ pub enum CameraMovement {
     PanRight,
 }
 
+const CAMERA_MIN_SCALE: f32 = 0.4;
+const CAMERA_MAX_SCALE: f32 = 3.5;
+
 // A simple camera system for moving and zooming the camera.
 pub fn movement(
     time: Res<Time>,
@@ -46,10 +49,10 @@ pub fn movement(
         ortho.scale += zoom_delta * 0.05;
     }
 
-    ortho.scale = ortho.scale.clamp(0.4, 1.0);
+    ortho.scale = ortho.scale.clamp(CAMERA_MIN_SCALE, CAMERA_MAX_SCALE);
 
     let z = transform.translation.z;
-    transform.translation += time.delta_seconds() * direction * 500.;
+    transform.translation += time.delta_seconds() * direction * 500. * ortho.scale;
     // Important! We need to restore the Z values when moving the camera
     // around. Bevy has a specific camera setup and this can mess
     // with how our layers are shown.
