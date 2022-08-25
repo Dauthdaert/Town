@@ -10,7 +10,7 @@ use bevy_turborand::{DelegatedRng, GlobalRng};
 use noise::{NoiseFn, OpenSimplex};
 
 #[derive(Component)]
-pub struct ComputeMap(Task<Map>);
+pub struct GenerateMap(Task<Map>);
 
 pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalRng>) {
     let thread_pool = AsyncComputeTaskPool::get();
@@ -21,26 +21,26 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
         let mut map = super::map::Map::new(MAP_HEIGHT, MAP_WIDTH);
 
         let generator = MapGenerator::new(e_seed, m_seed);
-        for x in 0..1000 {
-            for y in 0..1000 {
+        for x in 0..map.width {
+            for y in 0..map.height {
                 let idx = map.xy_idx(x, y);
                 map.tiles[idx] = generator.generate(x as i32, y as i32);
             }
         }
         map
     });
-    commands.spawn().insert(ComputeMap(task));
+    commands.spawn().insert(GenerateMap(task));
 }
 
 pub fn handle_generate_map(
     mut commands: Commands,
-    mut compute_map_tasks: Query<(Entity, &mut ComputeMap)>,
+    mut gen_map_tasks: Query<(Entity, &mut GenerateMap)>,
     progress: Res<ProgressCounter>,
 ) {
-    let (compute_map_entity, mut compute_map_task) = compute_map_tasks.single_mut();
-    if let Some(map) = future::block_on(future::poll_once(&mut compute_map_task.0)) {
+    let (gen_map_entity, mut gen_map_task) = gen_map_tasks.single_mut();
+    if let Some(map) = future::block_on(future::poll_once(&mut gen_map_task.0)) {
         commands.insert_resource(map);
-        commands.entity(compute_map_entity).despawn();
+        commands.entity(gen_map_entity).despawn();
 
         progress.manually_track(true.into());
     } else {

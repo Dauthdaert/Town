@@ -11,7 +11,7 @@ pub enum CameraMovement {
 }
 
 const CAMERA_MIN_SCALE: f32 = 0.4;
-const CAMERA_MAX_SCALE: f32 = 3.5;
+const CAMERA_MAX_SCALE: f32 = 4.5;
 
 // A simple camera system for moving and zooming the camera.
 pub fn movement(
