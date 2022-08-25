@@ -1,42 +1,50 @@
+use futures_lite::future;
+use iyes_progress::ProgressCounter;
+
+use super::{biomes::Biomes, map::Map, MAP_HEIGHT, MAP_WIDTH};
+use bevy::{
+    prelude::*,
+    tasks::{AsyncComputeTaskPool, Task},
+};
+use bevy_turborand::{DelegatedRng, GlobalRng};
 use noise::{NoiseFn, OpenSimplex};
 
-pub enum Biomes {
-    Ocean,
-    Beach,
-    Scorched,
-    Bare,
-    Snow,
-    Taiga,
-    Tundra,
-    TemperateDesert,
-    Shrubland,
-    Grassland,
-    TemperateDeciduousForest,
-    TemperateRainForest,
-    SubtropicalDesert,
-    TropicalSeasonalForest,
-    TropicalRainForest,
+#[derive(Component)]
+pub struct ComputeMap(Task<Map>);
+
+pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalRng>) {
+    let thread_pool = AsyncComputeTaskPool::get();
+    let e_seed = global_rng.u32(u32::MIN..u32::MAX);
+    let m_seed = global_rng.u32(u32::MIN..u32::MAX);
+
+    let task = thread_pool.spawn(async move {
+        let mut map = super::map::Map::new(MAP_HEIGHT, MAP_WIDTH);
+
+        let generator = MapGenerator::new(e_seed, m_seed);
+        for x in 0..1000 {
+            for y in 0..1000 {
+                let idx = map.xy_idx(x, y);
+                map.tiles[idx] = generator.generate(x as i32, y as i32);
+            }
+        }
+        map
+    });
+    commands.spawn().insert(ComputeMap(task));
 }
 
-impl Biomes {
-    pub fn texture(self) -> u8 {
-        match self {
-            Biomes::Shrubland => 0,
-            Biomes::Grassland => 0,
-            Biomes::Ocean => 1,
-            Biomes::TemperateDeciduousForest => 2,
-            Biomes::TemperateRainForest => 2,
-            Biomes::TropicalSeasonalForest => 2,
-            Biomes::TropicalRainForest => 2,
-            Biomes::Bare => 3,
-            Biomes::Snow => 5,
-            Biomes::Taiga => 5,
-            Biomes::Tundra => 5,
-            Biomes::Beach => 6,
-            Biomes::TemperateDesert => 6,
-            Biomes::SubtropicalDesert => 6,
-            Biomes::Scorched => 7,
-        }
+pub fn handle_generate_map(
+    mut commands: Commands,
+    mut compute_map_tasks: Query<(Entity, &mut ComputeMap)>,
+    progress: Res<ProgressCounter>,
+) {
+    let (compute_map_entity, mut compute_map_task) = compute_map_tasks.single_mut();
+    if let Some(map) = future::block_on(future::poll_once(&mut compute_map_task.0)) {
+        commands.insert_resource(map);
+        commands.entity(compute_map_entity).despawn();
+
+        progress.manually_track(true.into());
+    } else {
+        progress.manually_track(false.into());
     }
 }
 
