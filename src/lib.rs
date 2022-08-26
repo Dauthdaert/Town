@@ -29,7 +29,8 @@ pub fn app() -> App {
         present_mode: PresentMode::AutoVsync,
         ..Default::default()
     })
-    .insert_resource(ImageSettings::default_nearest());
+    .insert_resource(ImageSettings::default_nearest())
+    .insert_resource(Msaa { samples: 1 });
 
     //Add bevy and dependency plugins
     app.add_plugins(DefaultPlugins)

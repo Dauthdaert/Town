@@ -62,8 +62,8 @@ impl MapGenerator {
     }
 
     pub fn generate(&self, x: i32, y: i32) -> Biomes {
-        let nx = x as f64 / 100.0 - 0.5;
-        let ny = y as f64 / 100.0 - 0.5;
+        let nx = x as f64 / 400. - 0.5;
+        let ny = y as f64 / 400. - 0.5;
 
         let mut e = 1.00 * self.noise_e(1.0 * nx, 1.0 * ny)
             + 0.50 * self.noise_e(2.0 * nx + 2.1, 2.0 * ny + 1.5)

@@ -46,7 +46,7 @@ pub fn despawn_chunks_outside_camera(
     mut chunk_manager: ResMut<ChunkManager>,
 ) {
     let (camera_transform, camera_ortho) = camera_query.single();
-    let chunk_remove_distance: f32 = (camera_ortho.right - camera_ortho.left) * camera_ortho.scale;
+    let chunk_remove_distance: f32 = (camera_ortho.right - camera_ortho.left) * camera_ortho.scale * 2.;
 
     for (entity, chunk_transform) in chunks_query.iter() {
         let chunk_pos = chunk_transform.translation.xy();
