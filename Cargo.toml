@@ -37,6 +37,7 @@ default = [
     "bevy/png",
     "bevy/x11",
     "bevy_kira_audio/ogg",
+    "bevy_asset_loader/2d",
     "bevy_asset_loader/stageless",
     "bevy_asset_loader/progress_tracking",
     "bevy_asset_loader/progress_tracking_stageless"

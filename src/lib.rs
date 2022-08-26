@@ -10,6 +10,8 @@ use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 pub const LAUNCHER_TITLE: &str = "Town";
 
+mod ai;
+mod animation;
 mod camera;
 mod map_gen;
 pub mod states;
@@ -45,13 +47,16 @@ pub fn app() -> App {
         .add_loading_state(
             LoadingState::new(GameStates::AssetLoading)
                 .continue_to_state(GameStates::MapGeneration)
-                .with_collection::<map_gen::TilemapAssets>(),
+                .with_collection::<map_gen::TilemapAssets>()
+                .with_collection::<animation::SpriteAssets>(),
         )
         .add_plugin(ProgressPlugin::new(GameStates::AssetLoading));
 
     //Add custom plugins
-    app.add_plugin(camera::CameraPlugin);
-    app.add_plugin(map_gen::MapGenPlugin);
+    app.add_plugin(camera::CameraPlugin)
+        .add_plugin(map_gen::MapGenPlugin)
+        .add_plugin(ai::AIPlugin)
+        .add_plugin(animation::AnimationPlugin);
 
     app
 }

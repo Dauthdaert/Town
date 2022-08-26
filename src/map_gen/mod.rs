@@ -17,7 +17,7 @@ pub mod map;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
-    #[asset(path = "tiles.png")]
+    #[asset(path = "textures/tiles.png")]
     tiles: Handle<Image>,
 }
 
