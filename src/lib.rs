@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::texture::ImageSettings, window::PresentMode};
+use bevy::{prelude::*, render::texture::ImageSettings, window::PresentMode, winit::WinitSettings};
 use bevy_asset_loader::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use bevy_turborand::RngPlugin;
@@ -29,6 +29,7 @@ pub fn app() -> App {
         present_mode: PresentMode::AutoVsync,
         ..Default::default()
     })
+    .insert_resource(WinitSettings::game())
     .insert_resource(ImageSettings::default_nearest())
     .insert_resource(Msaa { samples: 1 });
 
@@ -44,14 +45,14 @@ pub fn app() -> App {
     }
 
     //Add custom resources and systems
-    app.add_loopless_state(GameStates::AssetLoading)
+    app.add_loopless_state(GameStates::Splash)
         .add_loading_state(
-            LoadingState::new(GameStates::AssetLoading)
+            LoadingState::new(GameStates::Splash)
                 .continue_to_state(GameStates::MapGeneration)
                 .with_collection::<map_gen::TilemapAssets>()
                 .with_collection::<animation::SpriteAssets>(),
         )
-        .add_plugin(ProgressPlugin::new(GameStates::AssetLoading));
+        .add_plugin(ProgressPlugin::new(GameStates::Splash));
 
     //Add custom plugins
     app.add_plugin(camera::CameraPlugin)

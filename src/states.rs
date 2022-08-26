@@ -1,6 +1,6 @@
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Copy)]
 pub enum GameStates {
-    AssetLoading,
+    Splash,
     MapGeneration,
     InGame,
 }

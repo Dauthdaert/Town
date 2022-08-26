@@ -39,5 +39,6 @@ fn setup_camera(mut commands: Commands) {
                 .insert(KeyCode::S, CameraMovement::PanDown)
                 .insert(KeyCode::Down, CameraMovement::PanDown)
                 .build(),
-        });
+        })
+        .insert(Name::from("Main Camera"));
 }
