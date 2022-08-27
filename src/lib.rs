@@ -10,6 +10,8 @@ use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 
 pub const LAUNCHER_TITLE: &str = "Town";
 
+pub const SIMULATION_SPEED: f32 = 5.0;
+
 mod ai;
 mod animation;
 mod camera;

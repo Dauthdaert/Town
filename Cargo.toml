@@ -57,6 +57,7 @@ leafwing-input-manager = "0.5.*"
 bevy-inspector-egui = "0.12.*"
 bevy_turborand = "0.3.0"
 bevy_asset_loader = "0.12.1"
+big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
 if_chain = "1.0.2"
 futures-lite = "1.12.0"
 noise = { git = "https://github.com/Razaekel/noise-rs.git" }

@@ -858,6 +858,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "big-brain"
+version = "0.12.1-alpha.0"
+source = "git+https://github.com/Dauthdaert/big-brain.git#c1b3885403e87d64bfec7edbe9d181715c86f7cb"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "bindgen"
 version = "0.59.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3597,6 +3605,7 @@ dependencies = [
  "bevy_ecs_tilemap",
  "bevy_kira_audio",
  "bevy_turborand",
+ "big-brain",
  "futures-lite",
  "if_chain",
  "image 0.24.3",
