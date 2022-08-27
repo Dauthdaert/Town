@@ -9,6 +9,6 @@ pub struct AIPlugin;
 
 impl Plugin for AIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_enter_system(GameStates::MapGeneration, spawner::spawn_ai);
+        app.add_exit_system(GameStates::MapGeneration, spawner::spawn_ai);
     }
 }

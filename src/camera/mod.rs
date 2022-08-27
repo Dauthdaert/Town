@@ -12,7 +12,7 @@ pub struct CameraPlugin;
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(InputManagerPlugin::<CameraMovement>::default())
-            .add_enter_system(GameStates::InGame, setup_camera)
+            .add_exit_system(GameStates::MapGeneration, setup_camera)
             .add_system(movement::movement.run_in_state(GameStates::InGame));
     }
 }
