@@ -88,34 +88,11 @@ impl MapGenerator {
 
     fn biome(&self, e: f64, m: f64) -> Biomes {
         // these thresholds will need tuning to match your generator
-        if e < 0.1 {
+        if e < 0.13 {
             return Biomes::Ocean;
         }
-        if e < 0.12 {
+        if e < 0.15 {
             return Biomes::Beach;
-        }
-
-        if e > 0.8 {
-            if m < 0.1 {
-                return Biomes::Scorched;
-            }
-            if m < 0.2 {
-                return Biomes::Bare;
-            }
-            if m < 0.5 {
-                return Biomes::Tundra;
-            }
-            return Biomes::Snow;
-        }
-
-        if e > 0.6 {
-            if m < 0.33 {
-                return Biomes::TemperateDesert;
-            }
-            if m < 0.66 {
-                return Biomes::Shrubland;
-            }
-            return Biomes::Taiga;
         }
 
         if e > 0.3 {
@@ -129,6 +106,29 @@ impl MapGenerator {
                 return Biomes::TemperateDeciduousForest;
             }
             return Biomes::TemperateRainForest;
+        }
+
+        if e > 0.6 {
+            if m < 0.33 {
+                return Biomes::TemperateDesert;
+            }
+            if m < 0.66 {
+                return Biomes::Shrubland;
+            }
+            return Biomes::Taiga;
+        }
+
+        if e > 0.8 {
+            if m < 0.1 {
+                return Biomes::Scorched;
+            }
+            if m < 0.2 {
+                return Biomes::Bare;
+            }
+            if m < 0.5 {
+                return Biomes::Tundra;
+            }
+            return Biomes::Snow;
         }
 
         if m < 0.16 {

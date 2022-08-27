@@ -41,7 +41,11 @@ impl Biomes {
     }
 
     #[allow(dead_code)]
-    pub fn obstacle(&self) -> bool {
+    pub fn is_obstacle(&self) -> bool {
         matches!(self, Biomes::Ocean | Biomes::None)
+    }
+
+    pub fn is_water_source(&self) -> bool {
+        matches!(self, Biomes::Ocean)
     }
 }
