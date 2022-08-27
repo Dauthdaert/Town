@@ -70,7 +70,7 @@ fn spawn_chunk(commands: &mut Commands, tilemap_assets: &TilemapAssets, chunk_po
                 let abs_tile_x = chunk_pos.x as u32 * CHUNK_SIZE.x + x;
                 let abs_tile_y = chunk_pos.y as u32 * CHUNK_SIZE.y + y;
                 if abs_tile_y < map.height && abs_tile_x < map.width {
-                    let tile_biome = map.tiles[map.xy_idx(abs_tile_x, abs_tile_y)];
+                    let tile_biome = map.tiles[map.tile_xy_idx(abs_tile_x, abs_tile_y)];
                     let tile_pos = TilePos { x, y };
 
                     let tile_entity = commands

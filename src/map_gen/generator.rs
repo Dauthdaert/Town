@@ -23,7 +23,7 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
         let generator = MapGenerator::new(e_seed, m_seed);
         for x in 0..map.width {
             for y in 0..map.height {
-                let idx = map.xy_idx(x, y);
+                let idx = map.tile_xy_idx(x, y);
                 map.tiles[idx] = generator.generate(x as i32, y as i32);
             }
         }

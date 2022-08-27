@@ -1,4 +1,4 @@
-use super::biomes::Biomes;
+use super::{biomes::Biomes, TILE_SIZE};
 
 pub struct Map {
     pub tiles: Vec<Biomes>,
@@ -15,7 +15,12 @@ impl Map {
         }
     }
 
-    pub fn xy_idx(&self, x: u32, y: u32) -> usize {
+    pub fn tile_xy_idx(&self, x: u32, y: u32) -> usize {
         (y * self.width + x) as usize
+    }
+
+    #[allow(dead_code)]
+    pub fn world_xy_idx(&self, x: f32, y: f32) -> usize {
+        self.tile_xy_idx((x / TILE_SIZE.x).floor() as u32, (y / TILE_SIZE.y).floor() as u32)
     }
 }
