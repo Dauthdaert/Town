@@ -71,25 +71,25 @@ impl Map {
         if x > 0 && y > 0 && self.is_passable(x - 1, y - 1) {
             exits.push((
                 TilePos::new(x - 1, y - 1),
-                (t_t.distance() as f32 * 1.45).floor() as u32,
+                (t_t.distance() as f32 * 1.42).floor() as u32,
             ));
         }
         if y > 0 && self.is_passable(x + 1, y - 1) {
             exits.push((
                 TilePos::new(x + 1, y - 1),
-                (t_t.distance() as f32 * 1.45).floor() as u32,
+                (t_t.distance() as f32 * 1.42).floor() as u32,
             ));
         }
         if x > 0 && self.is_passable(x - 1, y + 1) {
             exits.push((
                 TilePos::new(x - 1, y + 1),
-                (t_t.distance() as f32 * 1.45).floor() as u32,
+                (t_t.distance() as f32 * 1.42).floor() as u32,
             ));
         }
         if self.is_passable(x + 1, y + 1) {
             exits.push((
                 TilePos::new(x + 1, y + 1),
-                (t_t.distance() as f32 * 1.45).floor() as u32,
+                (t_t.distance() as f32 * 1.42).floor() as u32,
             ));
         }
 

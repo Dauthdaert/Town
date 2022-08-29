@@ -13,7 +13,7 @@ pub fn get_path_passable(start: &TilePos, map: &Map, destination: &TilePos, appr
         |p| {
             let d_x = p.x.abs_diff(destination.x) as f32;
             let d_y = p.y.abs_diff(destination.y) as f32;
-            ((d_x + d_y + (1.45 - 2.0) * f32::min(d_x, d_y)) * 100.0 * HEURISTIC_FACTOR) as u32
+            ((d_x + d_y + (1.42 - 2.0) * f32::min(d_x, d_y)) * 100.0 * HEURISTIC_FACTOR) as u32
         },
         |p| {
             if approximate {
