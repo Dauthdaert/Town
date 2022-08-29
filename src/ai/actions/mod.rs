@@ -7,4 +7,4 @@ mod shared_pathfinding;
 pub mod water_source_destination;
 
 pub const MAX_ACTION_DISTANCE: f32 = 0.3;
-pub const MAX_SIMPLE_PATH_DISTANCE: f32 = crate::map_gen::TILE_SIZE.x * 1.7;
+pub const MAX_SIMPLE_PATH_DISTANCE: f32 = crate::map_gen::TILE_SIZE.x * 2.;

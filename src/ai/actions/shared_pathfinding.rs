@@ -1,8 +1,8 @@
 use bevy_ecs_tilemap::tiles::TilePos;
 
-use crate::map_gen::map::{tile_xy_world_xy, Map};
+use crate::map_gen::map::Map;
 
-const HEURISTIC_FACTOR: f32 = 2.5;
+const HEURISTIC_FACTOR: f32 = 2.0;
 
 /// Returns optimal computed path using astar.
 /// Next node is at the end.
@@ -11,8 +11,9 @@ pub fn get_path_passable(start: &TilePos, map: &Map, destination: &TilePos, appr
         start,
         |p| map.get_passable_neighbors(p.x, p.y),
         |p| {
-            (tile_xy_world_xy(destination.x, destination.y).distance(tile_xy_world_xy(p.x, p.y)) * HEURISTIC_FACTOR)
-                .floor() as u32
+            let d_x = p.x.abs_diff(destination.x) as f32;
+            let d_y = p.y.abs_diff(destination.y) as f32;
+            ((d_x + d_y + (1.45 - 2.0) * f32::min(d_x, d_y)) * 100.0 * HEURISTIC_FACTOR) as u32
         },
         |p| {
             if approximate {
