@@ -23,9 +23,10 @@ impl Plugin for AIPlugin {
             BigBrainStage::Actions,
             ConditionSet::new()
                 .run_in_state(GameStates::InGame)
+                .with_system(actions::water_source_destination::water_source_destination)
+                .with_system(actions::random_destination::random_destination)
+                .with_system(actions::move_to_destination::move_to_destination)
                 .with_system(actions::drink::drink)
-                .with_system(actions::move_to_water_source::move_to_water_source)
-                .with_system(actions::meander::randomly_move)
                 .into(),
         );
         app.add_system_set_to_stage(

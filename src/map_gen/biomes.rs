@@ -40,6 +40,27 @@ impl Biomes {
         }
     }
 
+    pub fn distance(&self) -> u32 {
+        match self {
+            Biomes::Ocean => 100,
+            Biomes::Beach => 100,
+            Biomes::Scorched => 100,
+            Biomes::Bare => 100,
+            Biomes::Snow => 100,
+            Biomes::Taiga => 100,
+            Biomes::Tundra => 100,
+            Biomes::TemperateDesert => 100,
+            Biomes::Shrubland => 100,
+            Biomes::Grassland => 100,
+            Biomes::TemperateDeciduousForest => 100,
+            Biomes::TemperateRainForest => 100,
+            Biomes::SubtropicalDesert => 100,
+            Biomes::TropicalSeasonalForest => 100,
+            Biomes::TropicalRainForest => 100,
+            Biomes::None => u32::MAX,
+        }
+    }
+
     #[allow(dead_code)]
     pub fn is_obstacle(&self) -> bool {
         matches!(self, Biomes::Ocean | Biomes::None)

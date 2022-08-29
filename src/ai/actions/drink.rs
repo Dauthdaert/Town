@@ -2,7 +2,10 @@ use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::tiles::TilePos;
 use big_brain::prelude::*;
 
-use crate::{ai::behaviors::thirst::Thirst, map_gen::components::WaterSource};
+use crate::{
+    ai::behaviors::thirst::Thirst,
+    map_gen::{components::WaterSource, map::tile_xy_world_xy},
+};
 
 #[derive(Component, Clone, Copy, Debug)]
 pub struct Drink {
@@ -27,7 +30,8 @@ pub fn drink(
                 let closest_water_source =
                     super::shared_drinking::find_closest_water_source(&water_sources, actor_transform);
 
-                let distance = (closest_water_source - actor_transform.translation.xy()).length();
+                let distance = tile_xy_world_xy(closest_water_source.x, closest_water_source.y)
+                    .distance(actor_transform.translation.xy());
                 if distance <= super::MAX_ACTION_DISTANCE {
                     actor_thirst.drink_progress += drink.per_second * time.delta_seconds();
 
