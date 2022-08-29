@@ -7,6 +7,7 @@ use iyes_progress::ProgressPlugin;
 
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
 
 pub const LAUNCHER_TITLE: &str = "Town";
 
@@ -43,7 +44,16 @@ pub fn app() -> App {
     #[cfg(debug_assertions)]
     {
         app.add_plugin(FrameTimeDiagnosticsPlugin::default())
-            .add_plugin(LogDiagnosticsPlugin::default());
+            .add_plugin(LogDiagnosticsPlugin::default())
+            .insert_resource(WorldInspectorParams {
+                enabled: true,
+                ..Default::default()
+            })
+            .add_plugin(WorldInspectorPlugin::new())
+            .insert_resource(bevy::log::LogSettings {
+                level: bevy::log::Level::TRACE,
+                ..default()
+            });
     }
 
     //Add custom resources and systems
