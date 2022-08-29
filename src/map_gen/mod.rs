@@ -7,8 +7,8 @@ use iyes_progress::prelude::*;
 use crate::states::GameStates;
 
 pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 32.0, y: 32.0 };
-pub const MAP_HEIGHT: u32 = 700;
-pub const MAP_WIDTH: u32 = 700;
+pub const MAP_HEIGHT: u32 = 800;
+pub const MAP_WIDTH: u32 = 800;
 
 mod biomes;
 pub mod components;

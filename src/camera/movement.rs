@@ -46,7 +46,7 @@ pub fn movement(
 
     let zoom_delta = camera_movement.value(CameraMovement::Zoom);
     if zoom_delta != 0.00 {
-        ortho.scale += zoom_delta * 0.05;
+        ortho.scale += zoom_delta * 0.1;
     }
 
     ortho.scale = ortho.scale.clamp(CAMERA_MIN_SCALE, CAMERA_MAX_SCALE);

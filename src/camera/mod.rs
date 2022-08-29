@@ -5,7 +5,10 @@ use leafwing_input_manager::prelude::*;
 mod movement;
 use movement::CameraMovement;
 
-use crate::states::GameStates;
+use crate::{
+    map_gen::{MAP_HEIGHT, MAP_WIDTH},
+    states::GameStates,
+};
 
 pub struct CameraPlugin;
 
@@ -18,12 +21,11 @@ impl Plugin for CameraPlugin {
 }
 
 fn setup_camera(mut commands: Commands) {
-    let offset_x = crate::map_gen::TILE_SIZE.x * (crate::map_gen::MAP_WIDTH / 2) as f32;
-    let offset_y = crate::map_gen::TILE_SIZE.y * (crate::map_gen::MAP_HEIGHT / 2) as f32;
+    let offset = crate::map_gen::map::tile_xy_world_xy(MAP_WIDTH / 2, MAP_HEIGHT / 2);
     commands
         .spawn_bundle(Camera2dBundle {
-            transform: Transform::from_xyz(offset_x, offset_y, 1000.0)
-                .looking_at(Vec3::new(offset_x, offset_y, 0.0), Vec3::Y),
+            transform: Transform::from_xyz(offset.x, offset.y, 1000.0)
+                .looking_at(Vec3::new(offset.x, offset.y, 0.0), Vec3::Y),
             ..Default::default()
         })
         .insert_bundle(InputManagerBundle::<CameraMovement> {
