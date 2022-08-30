@@ -21,7 +21,7 @@ impl Thirst {
 }
 
 pub fn handle_thirst(time: Res<Time>, mut thirsts: Query<&mut Thirst>) {
-    thirsts.par_for_each_mut(20, |mut thirst| {
+    thirsts.par_for_each_mut(100, |mut thirst| {
         thirst.thirst += thirst.per_second * time.delta_seconds();
 
         //Clamp to 100.0

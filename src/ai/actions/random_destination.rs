@@ -26,10 +26,10 @@ pub fn random_destination(
                     .get_mut(*actor)
                     .expect("Actor has no RNG")
                     .usize(0..tiles.iter().count());
-                let destination = tiles.iter().nth(res).cloned();
+                let destination = tiles.iter().nth(res);
                 if let Some(destination) = destination {
-                    trace!("Setting random destination.");
-                    commands.entity(*actor).insert(Destination::new(destination, false));
+                    //TODO: Check that destination is possible.
+                    commands.entity(*actor).insert(Destination::new(*destination, false));
                     *action_state = ActionState::Success;
                 } else {
                     error!("Failed to get a random destination.");

@@ -1,22 +1,51 @@
 use bevy::prelude::Vec2;
 use bevy_ecs_tilemap::tiles::TilePos;
-use smallvec::SmallVec;
+use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConfig};
 
-use super::{biomes::Biomes, TILE_SIZE};
+use super::{biomes::Biomes, neighborhood::EuclideanNeighborhood, TILE_SIZE};
+
+fn cost_fn(map: &Map) -> impl '_ + Sync + Fn((usize, usize)) -> isize {
+    move |(x, y)| map.tiles[map.tile_xy_idx(x as u32, y as u32)].cost()
+}
 
 pub struct Map {
     pub tiles: Vec<Biomes>,
+    pub path_cache: Option<PathCache<EuclideanNeighborhood>>,
     pub height: u32,
     pub width: u32,
 }
 
 impl Map {
     pub fn new(height: u32, width: u32) -> Self {
-        Map {
+        Self {
             tiles: vec![Biomes::None; (height * width) as usize],
             height,
             width,
+            path_cache: None,
         }
+    }
+
+    pub fn init_path_cache(&mut self) {
+        let height = self.height as usize;
+        let width = self.width as usize;
+
+        self.path_cache = Some(PathCache::new(
+            (width, height),
+            cost_fn(self),
+            EuclideanNeighborhood::new(width, height),
+            PathCacheConfig::with_chunk_size(20),
+        ));
+    }
+
+    pub fn get_path(&self, start_tile: TilePos, goal_tile: TilePos) -> Option<AbstractPath<EuclideanNeighborhood>> {
+        self.path_cache
+            .as_ref()
+            .expect("Path cache should be initialized before calling get_path.")
+            .find_path(
+                (start_tile.x as usize, start_tile.y as usize),
+                (goal_tile.x as usize, goal_tile.y as usize),
+                cost_fn(self),
+            )
     }
 
     #[allow(dead_code)]
@@ -42,58 +71,18 @@ impl Map {
         )
     }
 
+    pub fn tile_cost(&self, x: u32, y: u32) -> isize {
+        if x >= self.width || y >= self.height {
+            return -1;
+        }
+        self.tiles[self.tile_xy_idx(x, y)].cost()
+    }
+
     pub fn is_passable(&self, x: u32, y: u32) -> bool {
         if x >= self.width || y >= self.height {
             return false;
         }
         !self.tiles[self.tile_xy_idx(x, y)].is_obstacle()
-    }
-
-    pub fn get_passable_neighbors(&self, x: u32, y: u32) -> SmallVec<[(TilePos, u32); 10]> {
-        let mut exits = SmallVec::new();
-        let t_t = self.tiles[self.tile_xy_idx(x, y)];
-
-        //Check cardinal directions
-        if x > 0 && self.is_passable(x - 1, y) {
-            exits.push((TilePos::new(x - 1, y), t_t.distance()));
-        }
-        if self.is_passable(x + 1, y) {
-            exits.push((TilePos::new(x + 1, y), t_t.distance()));
-        }
-        if y > 0 && self.is_passable(x, y - 1) {
-            exits.push((TilePos::new(x, y - 1), t_t.distance()));
-        }
-        if self.is_passable(x, y + 1) {
-            exits.push((TilePos::new(x, y + 1), t_t.distance()));
-        }
-
-        //Check diagonal directions
-        if x > 0 && y > 0 && self.is_passable(x - 1, y - 1) {
-            exits.push((
-                TilePos::new(x - 1, y - 1),
-                (t_t.distance() as f32 * 1.42).floor() as u32,
-            ));
-        }
-        if y > 0 && self.is_passable(x + 1, y - 1) {
-            exits.push((
-                TilePos::new(x + 1, y - 1),
-                (t_t.distance() as f32 * 1.42).floor() as u32,
-            ));
-        }
-        if x > 0 && self.is_passable(x - 1, y + 1) {
-            exits.push((
-                TilePos::new(x - 1, y + 1),
-                (t_t.distance() as f32 * 1.42).floor() as u32,
-            ));
-        }
-        if self.is_passable(x + 1, y + 1) {
-            exits.push((
-                TilePos::new(x + 1, y + 1),
-                (t_t.distance() as f32 * 1.42).floor() as u32,
-            ));
-        }
-
-        exits
     }
 }
 

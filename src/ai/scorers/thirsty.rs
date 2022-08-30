@@ -7,7 +7,7 @@ use crate::ai::characteristics::thirst::Thirst;
 pub struct Thirsty;
 
 pub fn thirsty_scorer(thirsts: Query<&Thirst>, mut actors: Query<(&Actor, &mut Score), With<Thirsty>>) {
-    actors.par_for_each_mut(20, |(Actor(actor), mut score)| {
+    actors.par_for_each_mut(100, |(Actor(actor), mut score)| {
         if let Ok(thirst) = thirsts.get(*actor) {
             score.set(thirst.thirst / 100.0);
         }

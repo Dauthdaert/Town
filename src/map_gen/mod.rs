@@ -15,6 +15,7 @@ pub mod components;
 mod display;
 mod generator;
 pub mod map;
+pub mod neighborhood;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {

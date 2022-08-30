@@ -27,6 +27,7 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
                 map.tiles[idx] = generator.generate(x as i32, y as i32);
             }
         }
+        map.init_path_cache();
         map
     });
     commands.spawn().insert(GenerateMap(task));

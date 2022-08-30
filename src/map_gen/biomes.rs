@@ -40,30 +40,30 @@ impl Biomes {
         }
     }
 
-    pub fn distance(&self) -> u32 {
+    pub fn cost(&self) -> isize {
         match self {
-            Biomes::Ocean => 100,
-            Biomes::Beach => 100,
-            Biomes::Scorched => 100,
+            Biomes::Ocean => -1,
+            Biomes::Beach => 140,
+            Biomes::Scorched => 140,
             Biomes::Bare => 100,
-            Biomes::Snow => 100,
+            Biomes::Snow => 170,
             Biomes::Taiga => 100,
-            Biomes::Tundra => 100,
-            Biomes::TemperateDesert => 100,
+            Biomes::Tundra => 140,
+            Biomes::TemperateDesert => 170,
+            Biomes::SubtropicalDesert => 170,
             Biomes::Shrubland => 100,
             Biomes::Grassland => 100,
-            Biomes::TemperateDeciduousForest => 100,
-            Biomes::TemperateRainForest => 100,
-            Biomes::SubtropicalDesert => 100,
-            Biomes::TropicalSeasonalForest => 100,
-            Biomes::TropicalRainForest => 100,
-            Biomes::None => u32::MAX,
+            Biomes::TemperateDeciduousForest => 150,
+            Biomes::TemperateRainForest => 150,
+            Biomes::TropicalSeasonalForest => 150,
+            Biomes::TropicalRainForest => 150,
+            Biomes::None => -1,
         }
     }
 
     #[allow(dead_code)]
     pub fn is_obstacle(&self) -> bool {
-        matches!(self, Biomes::Ocean | Biomes::None)
+        self.cost() == -1
     }
 
     pub fn is_water_source(&self) -> bool {
