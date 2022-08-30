@@ -7,6 +7,7 @@ use iyes_progress::ProgressPlugin;
 
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+#[cfg(debug_assertions)]
 use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
 
 pub const LAUNCHER_TITLE: &str = "Town";
