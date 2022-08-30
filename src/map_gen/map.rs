@@ -37,8 +37,8 @@ impl Map {
     #[allow(dead_code)]
     pub fn idx_world_xy(&self, idx: usize) -> Vec2 {
         Vec2::new(
-            (idx as u32 % self.width) as f32 * TILE_SIZE.x,
-            (idx as u32 / self.width) as f32 * TILE_SIZE.y,
+            (idx as u32 % self.width) as f32 * TILE_SIZE.x + TILE_SIZE.x * 0.5,
+            (idx as u32 / self.width) as f32 * TILE_SIZE.y + TILE_SIZE.y * 0.5,
         )
     }
 
@@ -95,10 +95,6 @@ impl Map {
 
         exits
     }
-
-    pub fn is_neighbor(&self, pos1: &TilePos, pos2: &TilePos) -> bool {
-        pos1.x.abs_diff(pos2.x) <= 1 && pos1.y.abs_diff(pos2.y) <= 1
-    }
 }
 
 #[allow(dead_code)]
@@ -112,9 +108,14 @@ pub fn world_xy_tile_xy(position: Vec2) -> TilePos {
 #[allow(dead_code)]
 pub fn tile_xy_world_xy(x: u32, y: u32) -> Vec2 {
     Vec2 {
-        x: x as f32 * TILE_SIZE.x,
-        y: y as f32 * TILE_SIZE.y,
+        x: x as f32 * TILE_SIZE.x + TILE_SIZE.x * 0.5,
+        y: y as f32 * TILE_SIZE.y + TILE_SIZE.y * 0.5,
     }
+}
+
+#[allow(dead_code)]
+pub fn is_neighbor(pos1: &TilePos, pos2: &TilePos) -> bool {
+    pos1.x.abs_diff(pos2.x) <= 1 && pos1.y.abs_diff(pos2.y) <= 1
 }
 
 #[cfg(test)]
@@ -137,11 +138,49 @@ mod test {
     fn world_xy_idx_round_trip() {
         let map = Map::new(1000, 1000);
 
-        let idx = map.world_xy_idx(3200.0, 3200.0);
+        assert_eq!(map.world_xy_idx(3200.0, 3200.0), map.world_xy_idx(3216.0, 3216.0));
+        assert_eq!(map.world_xy_idx(3231.0, 3231.0), map.world_xy_idx(3216.0, 3216.0));
+
+        let idx = map.world_xy_idx(3216.0, 3216.0);
         assert_eq!(idx, 100100);
 
         let coords = map.idx_world_xy(idx);
-        assert_eq!(coords.x, 3200.0);
-        assert_eq!(coords.y, 3200.0);
+        assert_eq!(coords.x, 3216.0);
+        assert_eq!(coords.y, 3216.0);
+    }
+
+    #[test]
+    fn is_neighbor_test() {
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(2, 2)));
+
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(2, 3)));
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(2, 1)));
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(3, 2)));
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(1, 2)));
+
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(3, 3)));
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(1, 1)));
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(1, 3)));
+        assert!(is_neighbor(&TilePos::new(2, 2), &TilePos::new(3, 1)));
+
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(0, 0)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(0, 1)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(0, 2)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(0, 3)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(0, 4)));
+
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(4, 0)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(4, 1)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(4, 2)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(4, 3)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(4, 4)));
+
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(1, 0)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(2, 0)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(3, 0)));
+
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(1, 4)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(2, 4)));
+        assert!(!is_neighbor(&TilePos::new(2, 2), &TilePos::new(3, 4)));
     }
 }

@@ -5,7 +5,7 @@ use iyes_loopless::prelude::*;
 use crate::states::GameStates;
 
 mod actions;
-mod behaviors;
+mod characteristics;
 mod pickers;
 mod scorers;
 mod spawner;
@@ -18,7 +18,7 @@ impl Plugin for AIPlugin {
 
         app.add_exit_system(GameStates::MapGeneration, spawner::spawn_ai);
 
-        app.add_system(behaviors::thirst::handle_thirst.run_in_state(GameStates::InGame));
+        app.add_system(characteristics::thirst::handle_thirst.run_in_state(GameStates::InGame));
         app.add_system_set_to_stage(
             BigBrainStage::Actions,
             ConditionSet::new()

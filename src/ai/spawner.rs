@@ -13,7 +13,7 @@ use super::{
         drink::Drink, move_to_destination::MoveToDestination, random_destination::RandomDestination,
         water_source_destination::WaterSourceDestination,
     },
-    behaviors::thirst::Thirst,
+    characteristics::*,
     pickers::highest_score::HighestScore,
     scorers::thirsty::Thirsty,
 };
@@ -22,13 +22,13 @@ pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<Sprite
     for i in 1..=100 {
         let move_and_drink = Steps::build()
             .step(WaterSourceDestination)
-            .step(MoveToDestination::new(32.0 * SIMULATION_SPEED))
+            .step(MoveToDestination::default())
             .step(Drink {
                 per_second: 10.0 * SIMULATION_SPEED,
             });
         let meander = Steps::build()
             .step(RandomDestination)
-            .step(MoveToDestination::new(16.0 * SIMULATION_SPEED));
+            .step(MoveToDestination::default());
         let thinker = Thinker::build()
             .picker(HighestScore::new())
             .when(Thirsty, move_and_drink)
@@ -47,6 +47,7 @@ pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<Sprite
             })
             .insert_bundle((
                 Thirst::new(0.0, 0.1 * SIMULATION_SPEED),
+                Speed::new(32.0 * SIMULATION_SPEED),
                 thinker,
                 Name::from(format!("Villager {}", i)),
                 RngComponent::from(&mut rng),

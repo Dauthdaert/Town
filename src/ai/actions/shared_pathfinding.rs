@@ -17,7 +17,7 @@ pub fn get_path_passable(start: &TilePos, map: &Map, destination: &TilePos, appr
         },
         |p| {
             if approximate {
-                map.is_neighbor(p, destination)
+                crate::map_gen::map::is_neighbor(p, destination)
             } else {
                 p == destination
             }

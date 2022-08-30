@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use big_brain::prelude::*;
 
-use crate::ai::behaviors::thirst::Thirst;
+use crate::ai::characteristics::thirst::Thirst;
 
 #[derive(Component, Clone, Copy, Debug)]
 pub struct Thirsty;
