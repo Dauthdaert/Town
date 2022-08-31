@@ -5,12 +5,13 @@ use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConf
 use super::{biomes::Biomes, neighborhood::EuclideanNeighborhood, TILE_SIZE};
 
 fn cost_fn(map: &Map) -> impl '_ + Sync + Fn((usize, usize)) -> isize {
-    move |(x, y)| map.tiles[map.tile_xy_idx(x as u32, y as u32)].cost()
+    move |(x, y)| map.tiles[map.tile_xy_idx(x.try_into().unwrap(), y.try_into().unwrap())].cost()
 }
 
 pub struct Map {
     pub tiles: Vec<Biomes>,
     pub path_cache: Option<PathCache<EuclideanNeighborhood>>,
+    pub neighborhood: EuclideanNeighborhood,
     pub height: u32,
     pub width: u32,
 }
@@ -18,22 +19,23 @@ pub struct Map {
 impl Map {
     pub fn new(height: u32, width: u32) -> Self {
         Self {
-            tiles: vec![Biomes::None; (height * width) as usize],
+            tiles: vec![Biomes::None; (height * width).try_into().unwrap()],
             height,
             width,
+            neighborhood: EuclideanNeighborhood::new(width.try_into().unwrap(), height.try_into().unwrap()),
             path_cache: None,
         }
     }
 
     pub fn init_path_cache(&mut self) {
-        let height = self.height as usize;
-        let width = self.width as usize;
+        let height = self.height.try_into().unwrap();
+        let width = self.width.try_into().unwrap();
 
         self.path_cache = Some(PathCache::new(
             (width, height),
             cost_fn(self),
-            EuclideanNeighborhood::new(width, height),
-            PathCacheConfig::with_chunk_size(20),
+            self.neighborhood,
+            PathCacheConfig::with_chunk_size(30),
         ));
     }
 
@@ -42,15 +44,15 @@ impl Map {
             .as_ref()
             .expect("Path cache should be initialized before calling get_path.")
             .find_path(
-                (start_tile.x as usize, start_tile.y as usize),
-                (goal_tile.x as usize, goal_tile.y as usize),
+                (start_tile.x.try_into().unwrap(), start_tile.y.try_into().unwrap()),
+                (goal_tile.x.try_into().unwrap(), goal_tile.y.try_into().unwrap()),
                 cost_fn(self),
             )
     }
 
     #[allow(dead_code)]
     pub fn tile_xy_idx(&self, x: u32, y: u32) -> usize {
-        (y * self.width + x) as usize
+        (y * self.width + x).try_into().unwrap()
     }
 
     #[allow(dead_code)]

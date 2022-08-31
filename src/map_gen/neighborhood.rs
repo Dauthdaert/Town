@@ -28,7 +28,7 @@ impl Neighborhood for EuclideanNeighborhood {
             let x = point.0 as isize + dx;
             let y = point.1 as isize + dy;
             if x >= 0 && x < width as isize && y >= 0 && y < height as isize {
-                target.push((x as usize, y as usize))
+                target.push((x.try_into().unwrap(), y.try_into().unwrap()))
             }
         }
     }

@@ -1,7 +1,7 @@
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::tiles::TilePos;
 use big_brain::prelude::*;
-use hierarchical_pathfinding::internals::AbstractPath;
+use hierarchical_pathfinding::{internals::AbstractPath, prelude::Neighborhood};
 
 use crate::{
     ai::characteristics::Speed,
@@ -32,7 +32,28 @@ pub fn move_to_destination(
                     query.get(*actor).expect("Actor has no position or destination.");
 
                 let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
-                if let Some(path) = map.get_path(actor_tile, actor_destination.destination) {
+                let path = if let Some(path) = map.get_path(actor_tile, actor_destination.destination) {
+                    Some(path)
+                } else if actor_destination.approximate {
+                    let mut tiles = Vec::new();
+                    map.neighborhood.get_all_neighbors(
+                        (
+                            actor_destination.destination.x.try_into().unwrap(),
+                            actor_destination.destination.y.try_into().unwrap(),
+                        ),
+                        &mut tiles,
+                    );
+                    tiles.iter().find_map(|tile| {
+                        map.get_path(
+                            actor_tile,
+                            TilePos::new(tile.0.try_into().unwrap(), tile.1.try_into().unwrap()),
+                        )
+                    })
+                } else {
+                    None
+                };
+
+                if let Some(path) = path {
                     move_to.path = Some(path);
                     *action_state = ActionState::Executing;
                 } else {
@@ -53,7 +74,7 @@ pub fn move_to_destination(
                         .as_mut()
                         .expect("Actor has no path.")
                         .next()
-                        .map(|(x, y)| TilePos::new(x as u32, y as u32))
+                        .map(|(x, y)| TilePos::new(x.try_into().unwrap(), y.try_into().unwrap()))
                 }) {
                     if map.is_passable(next.x, next.y) {
                         let next_pos = tile_xy_world_xy(next.x, next.y);
