@@ -46,3 +46,44 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
             ..default()
         });
 }
+
+pub fn spawn_objects(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, map: Res<Map>) {
+    let object_map_size = TilemapSize {
+        x: map.width,
+        y: map.height,
+    };
+    let mut object_storage = TileStorage::empty(object_map_size);
+
+    commands
+        .spawn()
+        .insert(Name::from("ObjectMap"))
+        .with_children(|parent| {
+            for (idx, object) in map.objects.iter().enumerate() {
+                if let Some(object) = object {
+                    let object_pos = map.idx_tile_xy(idx);
+                    let mut object_builder = parent.spawn_bundle(TileBundle {
+                        position: object_pos,
+                        tilemap_id: TilemapId(parent.parent_entity()),
+                        texture: TileTexture(object.texture()),
+                        ..default()
+                    });
+
+                    if object.is_obstacle() {
+                        object_builder.insert(super::components::Obstacle);
+                    }
+
+                    let object_entity = object_builder.insert(Name::from("Object")).id();
+                    object_storage.set(&object_pos, Some(object_entity));
+                }
+            }
+        })
+        .insert_bundle(TilemapBundle {
+            grid_size: TILE_SIZE.into(),
+            size: object_map_size,
+            storage: object_storage,
+            texture: TilemapTexture(tilemap_assets.objects.clone()),
+            tile_size: TILE_SIZE,
+            transform: Transform::from_translation(Vec3::splat(1.0)),
+            ..default()
+        });
+}

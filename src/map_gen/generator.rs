@@ -1,7 +1,7 @@
 use futures_lite::future;
 use iyes_progress::ProgressCounter;
 
-use super::{biomes::Biomes, map::Map, MAP_HEIGHT, MAP_WIDTH};
+use super::{biomes::Biomes, map::Map, objects::Objects, MAP_HEIGHT, MAP_WIDTH};
 use bevy::{
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
@@ -24,7 +24,14 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
         for x in 0..map.width {
             for y in 0..map.height {
                 let idx = map.tile_xy_idx(x, y);
-                map.tiles[idx] = generator.generate(x as i32, y as i32);
+                let tile = generator.generate(x as i32, y as i32);
+                map.tiles[idx] = tile;
+
+                if let Some(object) = generator.generate_objects(x as i32, y as i32) {
+                    if !tile.is_obstacle() && !tile.is_water_source() {
+                        map.objects[idx] = Some(object);
+                    }
+                }
             }
         }
         map.init_path_cache();
@@ -85,6 +92,29 @@ impl MapGenerator {
         m /= 1.00 + 0.75 + 0.33 + 0.33 + 0.33 + 0.50;
 
         self.biome(e, m)
+    }
+
+    pub fn generate_objects(&self, x: i32, y: i32) -> Option<Objects> {
+        let nx = x as f64 / 400. - 0.5;
+        let ny = y as f64 / 400. - 0.5;
+
+        let mut e = 1.00 * self.noise_e(1.0 * nx, 1.0 * ny)
+            + 0.50 * self.noise_e(2.0 * nx + 2.1, 2.0 * ny + 1.5)
+            + 0.25 * self.noise_e(4.0 * nx + 6.4, 4.0 * ny + 5.9)
+            + 0.13 * self.noise_e(8.0 * nx + 17.6, 8.0 * ny + 25.3)
+            + 0.06 * self.noise_e(16.0 * nx + 42.4, 16.0 * ny + 51.6)
+            + 0.03 * self.noise_e(32.0 * nx + 98.2, 32.0 * ny + 105.2);
+
+        e /= 1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03;
+        e = f64::powi(e * 1.2, 3);
+
+        if e > 0.4 {
+            Some(Objects::AppleTree)
+        } else if e > 0.3 {
+            Some(Objects::Tree)
+        } else {
+            None
+        }
     }
 
     fn biome(&self, e: f64, m: f64) -> Biomes {

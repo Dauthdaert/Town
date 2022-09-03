@@ -16,11 +16,14 @@ mod display;
 mod generator;
 pub mod map;
 pub mod neighborhood;
+mod objects;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
     #[asset(path = "textures/tiles.png")]
     tiles: Handle<Image>,
+    #[asset(path = "textures/objects.png")]
+    objects: Handle<Image>,
 }
 
 impl TilemapAssets {}
@@ -32,6 +35,7 @@ impl Plugin for MapGenPlugin {
         app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::InGame))
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
             .add_system(generator::handle_generate_map.run_in_state(GameStates::MapGeneration))
-            .add_exit_system(GameStates::MapGeneration, display::spawn_tiles);
+            .add_exit_system(GameStates::MapGeneration, display::spawn_tiles)
+            .add_exit_system(GameStates::MapGeneration, display::spawn_objects);
     }
 }
