@@ -96,29 +96,6 @@ impl MapGenerator {
             return Biomes::Beach;
         }
 
-        if e > 0.3 {
-            if m < 0.16 {
-                return Biomes::TemperateDesert;
-            }
-            if m < 0.50 {
-                return Biomes::Grassland;
-            }
-            if m < 0.83 {
-                return Biomes::TemperateDeciduousForest;
-            }
-            return Biomes::TemperateRainForest;
-        }
-
-        if e > 0.6 {
-            if m < 0.33 {
-                return Biomes::TemperateDesert;
-            }
-            if m < 0.66 {
-                return Biomes::Shrubland;
-            }
-            return Biomes::Taiga;
-        }
-
         if e > 0.8 {
             if m < 0.1 {
                 return Biomes::Scorched;
@@ -132,6 +109,29 @@ impl MapGenerator {
             return Biomes::Snow;
         }
 
+        if e > 0.6 {
+            if m < 0.33 {
+                return Biomes::TemperateDesert;
+            }
+            if m < 0.66 {
+                return Biomes::Shrubland;
+            }
+            return Biomes::Taiga;
+        }
+
+        if e > 0.3 {
+            if m < 0.16 {
+                return Biomes::TemperateDesert;
+            }
+            if m < 0.50 {
+                return Biomes::Grassland;
+            }
+            if m < 0.83 {
+                return Biomes::TemperateDeciduousForest;
+            }
+            return Biomes::TemperateRainForest;
+        }
+
         if m < 0.16 {
             return Biomes::SubtropicalDesert;
         }
@@ -141,6 +141,7 @@ impl MapGenerator {
         if m < 0.66 {
             return Biomes::TropicalSeasonalForest;
         }
+
         Biomes::TropicalRainForest
     }
 

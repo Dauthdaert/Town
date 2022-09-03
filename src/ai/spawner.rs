@@ -19,28 +19,14 @@ use super::{
 };
 
 pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<SpriteAssets>, mut rng: ResMut<GlobalRng>) {
-    for i in 1..=100 {
-        let move_and_drink = Steps::build()
-            .step(WaterSourceDestination)
-            .step(MoveToDestination::default())
-            .step(Drink {
-                per_second: 10.0 * SIMULATION_SPEED,
-            });
-        let meander = Steps::build()
-            .step(RandomDestination)
-            .step(MoveToDestination::default());
-        let thinker = Thinker::build()
-            .picker(HighestScore::new())
-            .when(Thirsty, move_and_drink)
-            .when(FixedScore::build(0.5), meander);
-
-        let offset = crate::map_gen::map::tile_xy_world_xy(map.width / 2, map.height / 2);
+    for i in 1..=1000 {
+        let pos_offset = crate::map_gen::map::tile_xy_world_xy(map.width / 2, map.height / 2);
         commands
             .spawn_bundle(SpriteSheetBundle {
                 sprite: TextureAtlasSprite::new(0),
                 texture_atlas: sprite_assets.villager.clone(),
                 transform: Transform {
-                    translation: offset.extend(2.),
+                    translation: pos_offset.extend(2.),
                     ..default()
                 },
                 ..default()
@@ -48,10 +34,26 @@ pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<Sprite
             .insert_bundle((
                 Thirst::new(0.0, 0.1 * SIMULATION_SPEED),
                 Speed::new(32.0 * SIMULATION_SPEED),
-                thinker,
+                build_thinker(),
                 Name::from(format!("Villager {}", i)),
                 RngComponent::from(&mut rng),
                 AnimationTimer(Timer::from_seconds(0.5, true)),
             ));
     }
+}
+
+fn build_thinker() -> ThinkerBuilder {
+    let move_and_drink = Steps::build()
+        .step(WaterSourceDestination)
+        .step(MoveToDestination::default())
+        .step(Drink {
+            per_second: 10.0 * SIMULATION_SPEED,
+        });
+    let meander = Steps::build()
+        .step(RandomDestination)
+        .step(MoveToDestination::default());
+    Thinker::build()
+        .picker(HighestScore::new())
+        .when(Thirsty, move_and_drink)
+        .when(FixedScore::build(0.5), meander)
 }

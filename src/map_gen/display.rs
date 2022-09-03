@@ -21,7 +21,7 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
                     position: tile_pos,
                     tilemap_id: TilemapId(parent.parent_entity()),
                     texture: TileTexture(tile_biome.texture()),
-                    ..Default::default()
+                    ..default()
                 });
 
                 if tile_biome.is_water_source() {
@@ -43,6 +43,6 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
             texture: TilemapTexture(tilemap_assets.tiles.clone()),
             tile_size: TILE_SIZE,
             transform: Transform::from_translation(Vec3::splat(0.0)),
-            ..Default::default()
+            ..default()
         });
 }
