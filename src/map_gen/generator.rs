@@ -134,12 +134,28 @@ impl MapGenerator {
                 }
 
                 if blue_noise[idx] == max {
-                    //TODO: Replace this with biome weighted rng to pick objects.
-                    if max > 0.55 {
-                        self.map.features[idx] = Some(Features::Tree);
-                    } else {
-                        self.map.features[idx] = Some(Features::AppleTree);
-                    }
+                    //TODO: Replace checks of max with rng to pick objects.
+                    //TODO: Replace continues with biome specific features.
+                    self.map.features[idx] = match self.map.tiles[idx] {
+                        Biomes::Beach => Some(Features::CoconutTree),
+                        Biomes::Scorched => continue,
+                        Biomes::Bare => Some(Features::Rocks),
+                        Biomes::Snow => continue,
+                        Biomes::Taiga | Biomes::Tundra => continue,
+                        Biomes::TemperateDesert | Biomes::SubtropicalDesert => Some(Features::Cactus),
+                        Biomes::Shrubland | Biomes::Grassland => Some(Features::Bush),
+                        Biomes::TemperateDeciduousForest
+                        | Biomes::TemperateRainForest
+                        | Biomes::TropicalRainForest
+                        | Biomes::TropicalSeasonalForest => {
+                            if max > 0.60 {
+                                Some(Features::Tree)
+                            } else {
+                                Some(Features::AppleTree)
+                            }
+                        }
+                        Biomes::None | Biomes::Ocean => continue,
+                    };
                 }
             }
         }

@@ -20,23 +20,24 @@ pub enum Biomes {
 
 impl Biomes {
     pub fn texture(&self) -> u32 {
+        //TODO: Way to use alternate sprites
         match self {
-            Biomes::Shrubland => 0,
-            Biomes::Grassland => 0,
+            Biomes::Shrubland => 6,
+            Biomes::Grassland => 7,
             Biomes::Ocean => 1,
-            Biomes::TemperateDeciduousForest => 2,
-            Biomes::TemperateRainForest => 2,
-            Biomes::TropicalSeasonalForest => 2,
-            Biomes::TropicalRainForest => 2,
-            Biomes::Bare => 3,
-            Biomes::Snow => 5,
-            Biomes::Taiga => 5,
-            Biomes::Tundra => 5,
-            Biomes::Beach => 6,
-            Biomes::TemperateDesert => 6,
-            Biomes::SubtropicalDesert => 6,
-            Biomes::Scorched => 7,
-            Biomes::None => 255,
+            Biomes::TemperateDeciduousForest => 12,
+            Biomes::TemperateRainForest => 12,
+            Biomes::TropicalSeasonalForest => 12,
+            Biomes::TropicalRainForest => 12,
+            Biomes::Bare => 24,
+            Biomes::Snow => 11,
+            Biomes::Taiga => 9,
+            Biomes::Tundra => 10,
+            Biomes::Beach => 18,
+            Biomes::TemperateDesert => 18,
+            Biomes::SubtropicalDesert => 18,
+            Biomes::Scorched => 8,
+            Biomes::None => 0,
         }
     }
 
