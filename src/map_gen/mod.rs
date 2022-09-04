@@ -13,17 +13,17 @@ pub const MAP_WIDTH: u32 = 800;
 mod biomes;
 pub mod components;
 mod display;
+mod features;
 mod generator;
 pub mod map;
 pub mod neighborhood;
-mod objects;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
     #[asset(path = "textures/tiles.png")]
     tiles: Handle<Image>,
-    #[asset(path = "textures/objects.png")]
-    objects: Handle<Image>,
+    #[asset(path = "textures/features.png")]
+    features: Handle<Image>,
 }
 
 impl TilemapAssets {}
@@ -36,6 +36,6 @@ impl Plugin for MapGenPlugin {
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
             .add_system(generator::handle_generate_map.run_in_state(GameStates::MapGeneration))
             .add_exit_system(GameStates::MapGeneration, display::spawn_tiles)
-            .add_exit_system(GameStates::MapGeneration, display::spawn_objects);
+            .add_exit_system(GameStates::MapGeneration, display::spawn_features);
     }
 }

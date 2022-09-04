@@ -1,21 +1,21 @@
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Objects {
+pub enum Features {
     Tree,
     AppleTree,
 }
 
-impl Objects {
+impl Features {
     pub fn texture(&self) -> u32 {
         match self {
-            Objects::Tree => 0,
-            Objects::AppleTree => 7,
+            Features::Tree => 0,
+            Features::AppleTree => 7,
         }
     }
 
     pub fn is_obstacle(&self) -> bool {
         match self {
-            Objects::Tree => false,
-            Objects::AppleTree => false,
+            Features::Tree => false,
+            Features::AppleTree => false,
         }
     }
 }

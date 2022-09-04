@@ -1,7 +1,7 @@
 use futures_lite::future;
 use iyes_progress::ProgressCounter;
 
-use super::{biomes::Biomes, map::Map, objects::Objects, MAP_HEIGHT, MAP_WIDTH};
+use super::{biomes::Biomes, features::Features, map::Map, MAP_HEIGHT, MAP_WIDTH};
 use bevy::{
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
@@ -18,22 +18,10 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
     let m_seed = global_rng.u32(u32::MIN..u32::MAX);
 
     let task = thread_pool.spawn(async move {
-        let mut map = super::map::Map::new(MAP_HEIGHT, MAP_WIDTH);
-
-        let generator = MapGenerator::new(e_seed, m_seed);
-        for x in 0..map.width {
-            for y in 0..map.height {
-                let idx = map.tile_xy_idx(x, y);
-                let tile = generator.generate(x as i32, y as i32);
-                map.tiles[idx] = tile;
-
-                if let Some(object) = generator.generate_objects(x as i32, y as i32) {
-                    if !tile.is_obstacle() && !tile.is_water_source() {
-                        map.objects[idx] = Some(object);
-                    }
-                }
-            }
-        }
+        let mut map = MapGenerator::new(MAP_WIDTH, MAP_HEIGHT, e_seed, m_seed)
+            .generate_tiles()
+            .generate_features()
+            .build();
         map.init_path_cache();
         map
     });
@@ -59,72 +47,112 @@ pub fn handle_generate_map(
 pub struct MapGenerator {
     elevation_gen: OpenSimplex,
     moisture_gen: OpenSimplex,
+    map: Map,
 }
 
 impl MapGenerator {
-    pub fn new(e_seed: u32, m_seed: u32) -> Self {
+    pub fn new(width: u32, height: u32, e_seed: u32, m_seed: u32) -> Self {
         MapGenerator {
             elevation_gen: OpenSimplex::new(e_seed),
             moisture_gen: OpenSimplex::new(m_seed),
+            map: super::map::Map::new(height, width),
         }
     }
 
-    pub fn generate(&self, x: i32, y: i32) -> Biomes {
-        let nx = x as f64 / 400. - 0.5;
-        let ny = y as f64 / 400. - 0.5;
+    pub fn generate_tiles(&mut self) -> &mut Self {
+        for x in 0..self.map.width {
+            for y in 0..self.map.height {
+                let nx = x as f64 / 400. - 0.5;
+                let ny = y as f64 / 400. - 0.5;
 
-        let mut e = 1.00 * self.noise_e(1.0 * nx, 1.0 * ny)
-            + 0.50 * self.noise_e(2.0 * nx + 2.1, 2.0 * ny + 1.5)
-            + 0.25 * self.noise_e(4.0 * nx + 6.4, 4.0 * ny + 5.9)
-            + 0.13 * self.noise_e(8.0 * nx + 17.6, 8.0 * ny + 25.3)
-            + 0.06 * self.noise_e(16.0 * nx + 42.4, 16.0 * ny + 51.6)
-            + 0.03 * self.noise_e(32.0 * nx + 98.2, 32.0 * ny + 105.2);
+                let mut e = 1.00 * self.noise_e(1.0 * nx, 1.0 * ny)
+                    + 0.50 * self.noise_e(2.0 * nx + 2.1, 2.0 * ny + 1.5)
+                    + 0.25 * self.noise_e(4.0 * nx + 6.4, 4.0 * ny + 5.9)
+                    + 0.13 * self.noise_e(8.0 * nx + 17.6, 8.0 * ny + 25.3)
+                    + 0.06 * self.noise_e(16.0 * nx + 42.4, 16.0 * ny + 51.6)
+                    + 0.03 * self.noise_e(32.0 * nx + 98.2, 32.0 * ny + 105.2);
 
-        e /= 1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03;
-        e = f64::powi(e * 1.2, 3);
+                e /= 1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03;
+                e = f64::powi(e * 1.2, 3);
 
-        let mut m = 1.00 * self.noise_m(1.0 * nx, 1.0 * ny)
-            + 0.75 * self.noise_m(2.0 * nx + 1.4, 2.0 * ny + 3.2)
-            + 0.33 * self.noise_m(4.0 * nx + 5.8, 4.0 * ny + 4.2)
-            + 0.33 * self.noise_m(8.0 * nx + 17.6, 8.0 * ny + 29.1)
-            + 0.33 * self.noise_m(16.0 * nx + 38.9, 16.0 * ny + 36.8)
-            + 0.50 * self.noise_m(32.0 * nx + 114.5, 32.0 * ny + 85.2);
-        m /= 1.00 + 0.75 + 0.33 + 0.33 + 0.33 + 0.50;
+                let mut m = 1.00 * self.noise_m(1.0 * nx, 1.0 * ny)
+                    + 0.75 * self.noise_m(2.0 * nx + 1.4, 2.0 * ny + 3.2)
+                    + 0.33 * self.noise_m(4.0 * nx + 5.8, 4.0 * ny + 4.2)
+                    + 0.33 * self.noise_m(8.0 * nx + 17.6, 8.0 * ny + 29.1)
+                    + 0.33 * self.noise_m(16.0 * nx + 38.9, 16.0 * ny + 36.8)
+                    + 0.50 * self.noise_m(32.0 * nx + 114.5, 32.0 * ny + 85.2);
+                m /= 1.00 + 0.75 + 0.33 + 0.33 + 0.33 + 0.50;
 
-        self.biome(e, m)
+                let tile = self.biome(e, m);
+                let idx = self.map.tile_xy_idx(x, y);
+                self.map.tiles[idx] = tile;
+            }
+        }
+        self
     }
 
-    pub fn generate_objects(&self, x: i32, y: i32) -> Option<Objects> {
-        let nx = x as f64 / 400. - 0.5;
-        let ny = y as f64 / 400. - 0.5;
-
-        let mut e = 1.00 * self.noise_e(1.0 * nx, 1.0 * ny)
-            + 0.50 * self.noise_e(2.0 * nx + 2.1, 2.0 * ny + 1.5)
-            + 0.25 * self.noise_e(4.0 * nx + 6.4, 4.0 * ny + 5.9)
-            + 0.13 * self.noise_e(8.0 * nx + 17.6, 8.0 * ny + 25.3)
-            + 0.06 * self.noise_e(16.0 * nx + 42.4, 16.0 * ny + 51.6)
-            + 0.03 * self.noise_e(32.0 * nx + 98.2, 32.0 * ny + 105.2);
-
-        e /= 1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03;
-        e = f64::powi(e * 1.2, 3);
-
-        if e > 0.4 {
-            Some(Objects::AppleTree)
-        } else if e > 0.3 {
-            Some(Objects::Tree)
-        } else {
-            None
+    pub fn generate_features(&mut self) -> &mut Self {
+        let mut blue_noise = vec![0.0; (self.map.width * self.map.height) as usize];
+        for x in 0..self.map.width {
+            for y in 0..self.map.height {
+                let nx = x as f64 / self.map.width as f64 - 0.5;
+                let ny = y as f64 / self.map.height as f64 - 0.5;
+                blue_noise[self.map.tile_xy_idx(x, y)] = self.noise_e(5000.0 * nx, 5000.0 * ny);
+            }
         }
+
+        for x_c in 0..self.map.width as i32 {
+            for y_c in 0..self.map.height as i32 {
+                let idx = self.map.tile_xy_idx(x_c as u32, y_c as u32);
+                let r = match self.map.tiles[idx] {
+                    Biomes::Beach => 8,
+                    Biomes::Scorched => 9,
+                    Biomes::Bare => 10,
+                    Biomes::Snow => 9,
+                    Biomes::Taiga => 6,
+                    Biomes::Tundra => 7,
+                    Biomes::TemperateDesert => 8,
+                    Biomes::Shrubland => 5,
+                    Biomes::Grassland => 6,
+                    Biomes::TemperateDeciduousForest => 1,
+                    Biomes::TemperateRainForest => 1,
+                    Biomes::SubtropicalDesert => 8,
+                    Biomes::TropicalSeasonalForest => 1,
+                    Biomes::TropicalRainForest => 1,
+                    Biomes::None | Biomes::Ocean => {
+                        continue;
+                    }
+                };
+                let mut max = 0.0;
+                for x_n in (x_c - r)..=(x_c + r) {
+                    for y_n in (y_c - r)..=(y_c + r) {
+                        if y_n >= 0 && y_n < self.map.height as i32 && x_n >= 0 && x_n < self.map.width as i32 {
+                            let e = blue_noise[self.map.tile_xy_idx(x_n as u32, y_n as u32)];
+                            max = f64::max(e, max);
+                        }
+                    }
+                }
+
+                if blue_noise[idx] == max {
+                    //TODO: Replace this with biome weighted rng to pick objects.
+                    if max > 0.55 {
+                        self.map.features[idx] = Some(Features::Tree);
+                    } else {
+                        self.map.features[idx] = Some(Features::AppleTree);
+                    }
+                }
+            }
+        }
+
+        self
+    }
+
+    pub fn build(&self) -> Map {
+        self.map.clone()
     }
 
     fn biome(&self, e: f64, m: f64) -> Biomes {
         // these thresholds will need tuning to match your generator
-        if e < 0.13 {
-            return Biomes::Ocean;
-        }
-        if e < 0.15 {
-            return Biomes::Beach;
-        }
 
         if e > 0.8 {
             if m < 0.1 {
@@ -153,26 +181,34 @@ impl MapGenerator {
             if m < 0.16 {
                 return Biomes::TemperateDesert;
             }
-            if m < 0.50 {
+            if m < 0.60 {
                 return Biomes::Grassland;
             }
-            if m < 0.83 {
+            if m < 0.93 {
                 return Biomes::TemperateDeciduousForest;
             }
             return Biomes::TemperateRainForest;
         }
 
-        if m < 0.16 {
-            return Biomes::SubtropicalDesert;
-        }
-        if m < 0.33 {
-            return Biomes::Grassland;
-        }
-        if m < 0.66 {
-            return Biomes::TropicalSeasonalForest;
+        if e > 0.15 {
+            if m < 0.16 {
+                return Biomes::SubtropicalDesert;
+            }
+            if m < 0.53 {
+                return Biomes::Grassland;
+            }
+            if m < 0.76 {
+                return Biomes::TropicalSeasonalForest;
+            }
+
+            return Biomes::TropicalRainForest;
         }
 
-        Biomes::TropicalRainForest
+        if e > 0.13 {
+            return Biomes::Beach;
+        }
+
+        Biomes::Ocean
     }
 
     fn noise_e(&self, n_x: f64, n_y: f64) -> f64 {

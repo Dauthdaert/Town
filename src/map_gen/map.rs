@@ -2,15 +2,16 @@ use bevy::prelude::Vec2;
 use bevy_ecs_tilemap::tiles::TilePos;
 use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConfig};
 
-use super::{biomes::Biomes, neighborhood::EuclideanNeighborhood, objects::Objects, TILE_SIZE};
+use super::{biomes::Biomes, features::Features, neighborhood::EuclideanNeighborhood, TILE_SIZE};
 
 fn cost_fn(map: &Map) -> impl '_ + Sync + Fn((usize, usize)) -> isize {
     move |(x, y)| map.tiles[map.tile_xy_idx(x.try_into().unwrap(), y.try_into().unwrap())].cost()
 }
 
+#[derive(Clone, Debug)]
 pub struct Map {
     pub tiles: Vec<Biomes>,
-    pub objects: Vec<Option<Objects>>,
+    pub features: Vec<Option<Features>>,
     pub path_cache: Option<PathCache<EuclideanNeighborhood>>,
     pub neighborhood: EuclideanNeighborhood,
     pub height: u32,
@@ -21,7 +22,7 @@ impl Map {
     pub fn new(height: u32, width: u32) -> Self {
         Self {
             tiles: vec![Biomes::None; (height * width).try_into().unwrap()],
-            objects: vec![None; (height * width).try_into().unwrap()],
+            features: vec![None; (height * width).try_into().unwrap()],
             height,
             width,
             neighborhood: EuclideanNeighborhood::new(width.try_into().unwrap(), height.try_into().unwrap()),
