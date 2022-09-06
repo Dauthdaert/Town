@@ -3,6 +3,9 @@ use bevy_ecs_tilemap::prelude::*;
 
 use super::{map::Map, TilemapAssets, TILE_SIZE};
 
+#[derive(Component, Clone, Copy, Debug)]
+pub struct TileLayer;
+
 pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, map: Res<Map>) {
     let tilemap_size = TilemapSize {
         x: map.width,
@@ -12,7 +15,7 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
 
     commands
         .spawn()
-        .insert(Name::from("Tilemap"))
+        .insert_bundle((Name::from("Tile Layer"), TileLayer))
         .with_children(|parent| {
             for (idx, tile_biome) in map.tiles.iter().enumerate() {
                 let tile_pos = map.idx_tile_xy(idx);
@@ -47,6 +50,9 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
         });
 }
 
+#[derive(Component, Clone, Copy, Debug)]
+pub struct FeatureLayer;
+
 pub fn spawn_features(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, map: Res<Map>) {
     let feature_map_size = TilemapSize {
         x: map.width,
@@ -56,7 +62,7 @@ pub fn spawn_features(mut commands: Commands, tilemap_assets: Res<TilemapAssets>
 
     commands
         .spawn()
-        .insert(Name::from("FeatureMap"))
+        .insert_bundle((Name::from("Feature Layer"), FeatureLayer))
         .with_children(|parent| {
             for (idx, feature) in map.features.iter().enumerate() {
                 if let Some(feature) = feature {
