@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Biomes {
     Ocean,
@@ -29,7 +30,7 @@ impl Biomes {
             Biomes::TemperateRainForest => 12,
             Biomes::TropicalSeasonalForest => 12,
             Biomes::TropicalRainForest => 12,
-            Biomes::Bare => 24,
+            Biomes::Bare => 25,
             Biomes::Snow => 11,
             Biomes::Taiga => 9,
             Biomes::Tundra => 10,

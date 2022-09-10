@@ -7,7 +7,7 @@ use bevy::{
     tasks::{AsyncComputeTaskPool, Task},
 };
 use bevy_turborand::{DelegatedRng, GlobalRng};
-use noise::{NoiseFn, OpenSimplex};
+use noise::{Exponent, Fbm, NoiseFn, OpenSimplex, ScaleBias, ScalePoint};
 
 #[derive(Component)]
 pub struct GenerateMap(Task<Map>);
@@ -45,43 +45,43 @@ pub fn handle_generate_map(
 }
 
 pub struct MapGenerator {
-    elevation_gen: OpenSimplex,
-    moisture_gen: OpenSimplex,
+    elevation_seed: u32,
+    moisture_seed: u32,
     map: Map,
 }
 
 impl MapGenerator {
     pub fn new(width: u32, height: u32, e_seed: u32, m_seed: u32) -> Self {
         MapGenerator {
-            elevation_gen: OpenSimplex::new(e_seed),
-            moisture_gen: OpenSimplex::new(m_seed),
+            elevation_seed: e_seed,
+            moisture_seed: m_seed,
             map: super::map::Map::new(height, width),
         }
     }
 
     pub fn generate_tiles(&mut self) -> &mut Self {
+        let mut elevation_starter = Fbm::<OpenSimplex>::new(self.elevation_seed);
+        elevation_starter.lacunarity = 2.0;
+        let elevation_gen = Exponent::new(ScaleBias::new(elevation_starter).set_scale(1.2)).set_exponent(3.0);
+
+        let moisture_gen = Fbm::<OpenSimplex>::new(self.moisture_seed);
+
+        let x_min = -3.0;
+        let x_max = 3.0;
+
+        let y_min = -3.0;
+        let y_max = 3.0;
+
+        let x_step = (x_max - x_min) / self.map.width as f64;
+        let y_step = (y_max - y_min) / self.map.height as f64;
+
         for x in 0..self.map.width {
             for y in 0..self.map.height {
-                let nx = x as f64 / 400. - 0.5;
-                let ny = y as f64 / 400. - 0.5;
+                let nx = x_min + x_step * x as f64;
+                let ny = y_min + y_step * y as f64;
 
-                let mut e = 1.00 * self.noise_e(1.0 * nx, 1.0 * ny)
-                    + 0.50 * self.noise_e(2.0 * nx + 2.1, 2.0 * ny + 1.5)
-                    + 0.25 * self.noise_e(4.0 * nx + 6.4, 4.0 * ny + 5.9)
-                    + 0.13 * self.noise_e(8.0 * nx + 17.6, 8.0 * ny + 25.3)
-                    + 0.06 * self.noise_e(16.0 * nx + 42.4, 16.0 * ny + 51.6)
-                    + 0.03 * self.noise_e(32.0 * nx + 98.2, 32.0 * ny + 105.2);
-
-                e /= 1.00 + 0.50 + 0.25 + 0.13 + 0.06 + 0.03;
-                e = f64::powi(e * 1.2, 3);
-
-                let mut m = 1.00 * self.noise_m(1.0 * nx, 1.0 * ny)
-                    + 0.75 * self.noise_m(2.0 * nx + 1.4, 2.0 * ny + 3.2)
-                    + 0.33 * self.noise_m(4.0 * nx + 5.8, 4.0 * ny + 4.2)
-                    + 0.33 * self.noise_m(8.0 * nx + 17.6, 8.0 * ny + 29.1)
-                    + 0.33 * self.noise_m(16.0 * nx + 38.9, 16.0 * ny + 36.8)
-                    + 0.50 * self.noise_m(32.0 * nx + 114.5, 32.0 * ny + 85.2);
-                m /= 1.00 + 0.75 + 0.33 + 0.33 + 0.33 + 0.50;
+                let e = scale(elevation_gen.get([nx, ny]));
+                let m = scale(moisture_gen.get([nx, ny]));
 
                 let tile = self.biome(e, m);
                 let idx = self.map.tile_xy_idx(x, y);
@@ -92,12 +92,24 @@ impl MapGenerator {
     }
 
     pub fn generate_features(&mut self) -> &mut Self {
+        let feature_gen = ScalePoint::new(Fbm::<OpenSimplex>::new(self.elevation_seed)).set_scale(5000.0);
         let mut blue_noise = vec![0.0; (self.map.width * self.map.height) as usize];
+
+        let x_min = -5.0;
+        let x_max = 5.0;
+
+        let y_min = -5.0;
+        let y_max = 5.0;
+
+        let x_step = (x_max - x_min) / self.map.width as f64;
+        let y_step = (y_max - y_min) / self.map.height as f64;
+
         for x in 0..self.map.width {
             for y in 0..self.map.height {
-                let nx = x as f64 / self.map.width as f64 - 0.5;
-                let ny = y as f64 / self.map.height as f64 - 0.5;
-                blue_noise[self.map.tile_xy_idx(x, y)] = self.noise_e(5000.0 * nx, 5000.0 * ny);
+                let nx = x_min + x_step * x as f64;
+                let ny = y_min + y_step * y as f64;
+
+                blue_noise[self.map.tile_xy_idx(x, y)] = scale(feature_gen.get([nx, ny]));
             }
         }
 
@@ -107,7 +119,7 @@ impl MapGenerator {
                 let r = match self.map.tiles[idx] {
                     Biomes::Beach => 8,
                     Biomes::Scorched => 9,
-                    Biomes::Bare => 10,
+                    Biomes::Bare => 0,
                     Biomes::Snow => 9,
                     Biomes::Taiga => 6,
                     Biomes::Tundra => 7,
@@ -125,10 +137,12 @@ impl MapGenerator {
                 };
                 let mut max = 0.0;
                 for x_n in (x_c - r)..=(x_c + r) {
-                    for y_n in (y_c - r)..=(y_c + r) {
-                        if y_n >= 0 && y_n < self.map.height as i32 && x_n >= 0 && x_n < self.map.width as i32 {
-                            let e = blue_noise[self.map.tile_xy_idx(x_n as u32, y_n as u32)];
-                            max = f64::max(e, max);
+                    if x_n >= 0 && x_n < self.map.width as i32 {
+                        for y_n in (y_c - r)..=(y_c + r) {
+                            if y_n >= 0 && y_n < self.map.height as i32 {
+                                let e = blue_noise[self.map.tile_xy_idx(x_n as u32, y_n as u32)];
+                                max = f64::max(e, max);
+                            }
                         }
                     }
                 }
@@ -139,11 +153,17 @@ impl MapGenerator {
                     self.map.features[idx] = match self.map.tiles[idx] {
                         Biomes::Beach => Some(Features::CoconutTree),
                         Biomes::Scorched => continue,
-                        Biomes::Bare => Some(Features::Rocks),
+                        Biomes::Bare => Some(Features::Stone),
                         Biomes::Snow => continue,
                         Biomes::Taiga | Biomes::Tundra => continue,
                         Biomes::TemperateDesert | Biomes::SubtropicalDesert => Some(Features::Cactus),
-                        Biomes::Shrubland | Biomes::Grassland => Some(Features::Bush),
+                        Biomes::Shrubland | Biomes::Grassland => {
+                            if max > 0.8 {
+                                Some(Features::Bush)
+                            } else {
+                                Some(Features::Rocks)
+                            }
+                        }
                         Biomes::TemperateDeciduousForest
                         | Biomes::TemperateRainForest
                         | Biomes::TropicalRainForest
@@ -170,43 +190,33 @@ impl MapGenerator {
     fn biome(&self, e: f64, m: f64) -> Biomes {
         // these thresholds will need tuning to match your generator
 
-        if e > 0.8 {
-            if m < 0.1 {
-                return Biomes::Scorched;
-            }
-            if m < 0.2 {
-                return Biomes::Bare;
-            }
-            if m < 0.5 {
-                return Biomes::Tundra;
-            }
-            return Biomes::Snow;
+        if e > 0.6 {
+            return Biomes::Bare;
         }
 
-        if e > 0.6 {
+        if e > 0.5 {
             if m < 0.33 {
                 return Biomes::TemperateDesert;
             }
-            if m < 0.66 {
-                return Biomes::Shrubland;
-            }
-            return Biomes::Taiga;
+
+            return Biomes::Shrubland;
         }
 
-        if e > 0.3 {
-            if m < 0.16 {
+        if e > 0.15 {
+            if m < 0.26 {
                 return Biomes::TemperateDesert;
             }
-            if m < 0.60 {
+            if m < 0.65 {
                 return Biomes::Grassland;
             }
             if m < 0.93 {
                 return Biomes::TemperateDeciduousForest;
             }
+
             return Biomes::TemperateRainForest;
         }
 
-        if e > 0.15 {
+        if e > 0.035 {
             if m < 0.16 {
                 return Biomes::SubtropicalDesert;
             }
@@ -220,18 +230,14 @@ impl MapGenerator {
             return Biomes::TropicalRainForest;
         }
 
-        if e > 0.13 {
+        if e > 0.02 {
             return Biomes::Beach;
         }
 
         Biomes::Ocean
     }
+}
 
-    fn noise_e(&self, n_x: f64, n_y: f64) -> f64 {
-        self.elevation_gen.get([n_x, n_y]) / 2.0 + 0.5
-    }
-
-    fn noise_m(&self, n_x: f64, n_y: f64) -> f64 {
-        self.moisture_gen.get([n_x, n_y]) / 2.0 + 0.5
-    }
+fn scale(initial: f64) -> f64 {
+    (initial + 1.0) / 2.0
 }

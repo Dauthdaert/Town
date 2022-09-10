@@ -1,11 +1,23 @@
 use bevy::prelude::Vec2;
 use bevy_ecs_tilemap::tiles::TilePos;
 use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConfig};
+use if_chain::if_chain;
 
 use super::{biomes::Biomes, features::Features, neighborhood::EuclideanNeighborhood, TILE_SIZE};
 
 fn cost_fn(map: &Map) -> impl '_ + Sync + Fn((usize, usize)) -> isize {
-    move |(x, y)| map.tiles[map.tile_xy_idx(x.try_into().unwrap(), y.try_into().unwrap())].cost()
+    move |(x, y)| {
+        let idx = map.tile_xy_idx(x.try_into().unwrap(), y.try_into().unwrap());
+        if_chain! {
+            if let Some(feature) = map.features[idx];
+            if feature.is_obstacle();
+            then {
+                -1
+            } else {
+                map.tiles[idx].cost()
+            }
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
