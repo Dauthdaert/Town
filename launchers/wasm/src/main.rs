@@ -7,8 +7,7 @@ use town::LAUNCHER_TITLE;
 
 fn set_window_title(title: &str) {
     web_sys::window()
-        .map(|w| w.document())
-        .flatten()
+        .and_then(|w| w.document())
         .expect("Unable to get DOM")
         .set_title(title);
 }
