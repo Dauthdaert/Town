@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_mouse_tracking_plugin::{prelude::*, MainCamera};
 use iyes_loopless::prelude::*;
 use leafwing_input_manager::prelude::*;
 
@@ -49,5 +50,6 @@ fn setup_camera(mut commands: Commands) {
                 .insert(KeyCode::Down, CameraMovement::PanDown)
                 .build(),
         })
-        .insert(Name::from("Main Camera"));
+        .add_world_tracking()
+        .insert_bundle((Name::from("Main Camera"), MainCamera));
 }

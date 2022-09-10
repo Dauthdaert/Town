@@ -1,7 +1,9 @@
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Features {
+    Stump,
     Tree,
     AppleTree,
+    CoconutStump,
     CoconutTree,
     Cactus,
     Bush,
@@ -17,17 +19,22 @@ impl Features {
             Features::Cactus => 12,
             Features::Bush => 10,
             Features::Rocks => 15,
+            Features::Stump => 3,
+            Features::CoconutStump => 6,
         }
     }
 
+    #[allow(clippy::match_single_binding)]
     pub fn is_obstacle(&self) -> bool {
         match self {
-            Features::Tree => false,
-            Features::AppleTree => false,
-            Features::CoconutTree => false,
-            Features::Cactus => false,
-            Features::Bush => false,
-            Features::Rocks => false,
+            _ => false,
+        }
+    }
+
+    pub fn is_choppable(&self) -> bool {
+        match self {
+            Features::Tree | Features::CoconutTree | Features::Cactus => true,
+            Features::AppleTree | Features::Bush | Features::Rocks | Features::Stump | Features::CoconutStump => false,
         }
     }
 }

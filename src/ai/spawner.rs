@@ -10,12 +10,12 @@ use crate::{
 
 use super::{
     actions::{
-        drink::Drink, move_to_destination::MoveToDestination, random_destination::RandomDestination,
-        water_source_destination::WaterSourceDestination,
+        do_job::DoJob, drink::Drink, job_destination::JobDestination, move_to_destination::MoveToDestination,
+        random_destination::RandomDestination, take_job::TakingJob, water_source_destination::WaterSourceDestination,
     },
     characteristics::*,
     pickers::highest_score::HighestScore,
-    scorers::thirsty::Thirsty,
+    scorers::{job_available::JobAvailable, thirsty::Thirsty},
 };
 
 pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<SpriteAssets>, mut rng: ResMut<GlobalRng>) {
@@ -34,6 +34,7 @@ pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<Sprite
             .insert_bundle((
                 Thirst::new(0.0, 0.1 * SIMULATION_SPEED),
                 Speed::new(32.0 * SIMULATION_SPEED),
+                JobSeeker,
                 build_thinker(),
                 Name::from(format!("Villager {}", i)),
                 RngComponent::from(&mut rng),
@@ -52,8 +53,14 @@ fn build_thinker() -> ThinkerBuilder {
     let meander = Steps::build()
         .step(RandomDestination)
         .step(MoveToDestination::default());
+    let take_and_do_jobs = Steps::build()
+        .step(TakingJob)
+        .step(JobDestination)
+        .step(MoveToDestination::default())
+        .step(DoJob);
     Thinker::build()
         .picker(HighestScore::new())
         .when(Thirsty, move_and_drink)
+        .when(JobAvailable, take_and_do_jobs)
         .when(FixedScore::build(0.5), meander)
 }

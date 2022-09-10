@@ -3,4 +3,5 @@ pub enum GameStates {
     Splash,
     MapGeneration,
     InGame,
+    InJobSelection,
 }

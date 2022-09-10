@@ -1,6 +1,9 @@
+#![allow(clippy::too_many_arguments)]
+
 use bevy::{prelude::*, render::texture::ImageSettings, window::PresentMode, winit::WinitSettings};
 use bevy_asset_loader::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use bevy_mouse_tracking_plugin::prelude::*;
 use bevy_turborand::RngPlugin;
 use iyes_loopless::prelude::*;
 use iyes_progress::ProgressPlugin;
@@ -17,7 +20,9 @@ pub const SIMULATION_SPEED: f32 = 5.0;
 mod ai;
 mod animation;
 mod camera;
+pub mod jobs;
 mod map_gen;
+mod simulation;
 pub mod states;
 
 pub fn app() -> App {
@@ -40,6 +45,7 @@ pub fn app() -> App {
     //Add bevy and dependency plugins
     app.add_plugins(DefaultPlugins)
         .add_plugin(TilemapPlugin)
+        .add_plugin(MousePosPlugin)
         .add_plugin(RngPlugin::default());
 
     #[cfg(debug_assertions)]
@@ -50,11 +56,7 @@ pub fn app() -> App {
                 enabled: true,
                 ..Default::default()
             })
-            .add_plugin(WorldInspectorPlugin::new())
-            .insert_resource(bevy::log::LogSettings {
-                level: bevy::log::Level::TRACE,
-                ..default()
-            });
+            .add_plugin(WorldInspectorPlugin::new());
     }
 
     //Add custom resources and systems
@@ -63,15 +65,31 @@ pub fn app() -> App {
             LoadingState::new(GameStates::Splash)
                 .continue_to_state(GameStates::MapGeneration)
                 .with_collection::<map_gen::TilemapAssets>()
-                .with_collection::<animation::SpriteAssets>(),
+                .with_collection::<animation::SpriteAssets>()
+                .with_collection::<jobs::JobCreationMenuAssets>(),
         )
         .add_plugin(ProgressPlugin::new(GameStates::Splash));
 
     //Add custom plugins
     app.add_plugin(camera::CameraPlugin)
         .add_plugin(map_gen::MapGenPlugin)
+        .add_plugin(jobs::JobsPlugin)
         .add_plugin(ai::AIPlugin)
+        .add_plugin(simulation::SimulationPlugin)
         .add_plugin(animation::AnimationPlugin);
 
     app
+}
+
+fn cleanup_resource<T: bevy::ecs::system::Resource>(mut commands: Commands) {
+    commands.remove_resource::<T>();
+}
+
+fn cleanup_entity_by_component<T: bevy::ecs::component::Component>(
+    mut commands: Commands,
+    query: Query<Entity, With<T>>,
+) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
 }

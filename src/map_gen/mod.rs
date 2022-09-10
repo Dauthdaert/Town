@@ -18,6 +18,10 @@ mod generator;
 pub mod map;
 pub mod neighborhood;
 
+pub use biomes::Biomes;
+pub use display::{FeatureLayer, TileLayer};
+pub use features::Features;
+
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
     #[asset(path = "textures/tiles.png")]

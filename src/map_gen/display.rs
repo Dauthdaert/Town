@@ -78,6 +78,10 @@ pub fn spawn_features(mut commands: Commands, tilemap_assets: Res<TilemapAssets>
                         feature_builder.insert(super::components::Obstacle);
                     }
 
+                    if feature.is_choppable() {
+                        feature_builder.insert(super::components::Choppable);
+                    }
+
                     let feature_entity = feature_builder.insert(Name::from("Feature")).id();
                     feature_storage.set(&feature_pos, Some(feature_entity));
                 }
