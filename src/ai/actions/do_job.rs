@@ -17,7 +17,7 @@ pub fn do_job(
     mut commands: Commands,
     mut map: ResMut<Map>,
     time: Res<Time>,
-    mut jobs: Query<(&Transform, &mut HasJob)>,
+    mut actors: Query<(&Transform, &mut HasJob)>,
     features_query: Query<&TileStorage, With<FeatureLayer>>,
     mut trees: Query<(Entity, &mut TileTexture), With<Choppable>>,
     mut actions: Query<(&Actor, &mut ActionState, &DoJob)>,
@@ -29,7 +29,7 @@ pub fn do_job(
             }
             ActionState::Executing => {
                 let (actor_transform, mut actor_job) =
-                    jobs.get_mut(*actor).expect("Actor should have a position and job.");
+                    actors.get_mut(*actor).expect("Actor should have a position and job.");
                 let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
                 if crate::map_gen::map::is_neighbor(&actor_tile, &actor_job.job.position) {
                     actor_job.progress += actor_job.job.job_type.speed() * time.delta_seconds();
