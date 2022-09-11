@@ -6,6 +6,9 @@ use super::{map::Map, TilemapAssets, TILE_SIZE};
 #[derive(Component, Clone, Copy, Debug)]
 pub struct TileLayer;
 
+#[derive(Component, Clone, Copy, Debug)]
+pub struct TileLayerObject;
+
 pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, map: Res<Map>) {
     let tilemap_size = TilemapSize {
         x: map.width,
@@ -35,7 +38,7 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
                     tile_builder.insert(super::components::Obstacle);
                 }
 
-                let tile_entity = tile_builder.insert(Name::from("Tile")).id();
+                let tile_entity = tile_builder.insert_bundle((Name::from("Tile"), TileLayerObject)).id();
                 tile_storage.set(&tile_pos, Some(tile_entity));
             }
         })
@@ -52,6 +55,9 @@ pub fn spawn_tiles(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, m
 
 #[derive(Component, Clone, Copy, Debug)]
 pub struct FeatureLayer;
+
+#[derive(Component, Clone, Copy, Debug)]
+pub struct FeatureLayerObject;
 
 pub fn spawn_features(mut commands: Commands, tilemap_assets: Res<TilemapAssets>, map: Res<Map>) {
     let feature_map_size = TilemapSize {
@@ -86,7 +92,9 @@ pub fn spawn_features(mut commands: Commands, tilemap_assets: Res<TilemapAssets>
                         feature_builder.insert(super::components::Minable);
                     }
 
-                    let feature_entity = feature_builder.insert(Name::from("Feature")).id();
+                    let feature_entity = feature_builder
+                        .insert_bundle((Name::from("Feature"), FeatureLayerObject))
+                        .id();
                     feature_storage.set(&feature_pos, Some(feature_entity));
                 }
             }
