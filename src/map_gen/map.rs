@@ -99,7 +99,16 @@ impl Map {
         if x >= self.width || y >= self.height {
             return false;
         }
-        !self.tiles[self.tile_xy_idx(x, y)].is_obstacle()
+        let idx = self.tile_xy_idx(x, y);
+        if_chain! {
+            if let Some(feature) = self.features[idx];
+            if feature.is_obstacle();
+            then {
+                false
+            } else {
+                !self.tiles[idx].is_obstacle()
+            }
+        }
     }
 }
 
