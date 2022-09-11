@@ -33,4 +33,8 @@ impl Features {
     pub fn is_choppable(&self) -> bool {
         matches!(self, Features::Tree | Features::CoconutTree | Features::Cactus)
     }
+
+    pub fn is_minable(&self) -> bool {
+        matches!(self, Features::Stone | Features::Rocks)
+    }
 }
