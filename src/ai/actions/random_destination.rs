@@ -7,10 +7,12 @@ use if_chain::if_chain;
 use crate::map_gen::{
     components::Obstacle,
     map::{tile_xy_world_xy, Map},
-    TileLayerObject,
+    TileLayerObject, TILE_SIZE,
 };
 
 use super::components::Destination;
+
+const MAX_DESTINATION_DISTANCE: f32 = 100.0 * TILE_SIZE.x;
 
 #[derive(Component, Clone, Debug)]
 pub struct RandomDestination;
@@ -40,7 +42,7 @@ pub fn random_destination(
                             then {
                                 false
                             } else {
-                                tile_xy_world_xy(t.x, t.y).distance(actor_position.translation.xy()) < 3000.0
+                                tile_xy_world_xy(t.x, t.y).distance(actor_position.translation.xy()) < MAX_DESTINATION_DISTANCE
                             }
                         }
                     })
