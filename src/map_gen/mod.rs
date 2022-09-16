@@ -6,7 +6,7 @@ use iyes_progress::prelude::*;
 
 use crate::states::GameStates;
 
-pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 32.0, y: 32.0 };
+pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 16.0, y: 16.0 };
 pub const MAP_HEIGHT: u32 = 800;
 pub const MAP_WIDTH: u32 = 800;
 
@@ -24,9 +24,9 @@ pub use features::Features;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
-    #[asset(path = "textures/tiles.png")]
+    #[asset(path = "textures/16x16/tiles.png")]
     tiles: Handle<Image>,
-    #[asset(path = "textures/features.png")]
+    #[asset(path = "textures/16x16/features.png")]
     features: Handle<Image>,
 }
 
