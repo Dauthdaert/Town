@@ -4,7 +4,7 @@ use big_brain::prelude::*;
 
 use crate::{
     animation::{AnimationTimer, SpriteAssets},
-    map_gen::map::Map,
+    map_gen::{map::Map, TILE_SIZE},
     SIMULATION_SPEED,
 };
 
@@ -33,7 +33,7 @@ pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<Sprite
             })
             .insert_bundle((
                 Thirst::new(0.0, 0.1 * SIMULATION_SPEED),
-                Speed::new(32.0 * SIMULATION_SPEED),
+                Speed::new(1. * TILE_SIZE.x * SIMULATION_SPEED),
                 JobSeeker,
                 build_thinker(),
                 Name::from(format!("Villager {}", i)),
