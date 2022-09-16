@@ -45,7 +45,6 @@ pub fn handle_job_creation_hotkeys(
                     }
                 }
             }
-            dbg!(&job_queue.jobs);
             commands.remove_resource::<SelectionStart>();
         } else {
             commands.insert_resource(SelectionStart(world_tile));

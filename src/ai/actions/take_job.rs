@@ -28,7 +28,6 @@ pub fn take_job(
                         commands.entity(*actor).insert(HasJob::new(job));
                         *action_state = ActionState::Success;
                     } else {
-                        info!("Actor couldn't get a job.");
                         *action_state = ActionState::Failure;
                     }
                 } else {
