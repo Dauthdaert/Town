@@ -58,7 +58,7 @@ bevy-inspector-egui = "0.12.*"
 bevy_turborand = "0.3.0"
 bevy_asset_loader = "0.12.1"
 big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
-bevy_mouse_tracking_plugin = { git = "https://github.com/Dauthdaert/bevy-mouse-tracking.git" }
+bevy_mouse_tracking_plugin = "0.4.0"
 hierarchical_pathfinding = { git = "https://github.com/mich101mich/hierarchical_pathfinding.git" }
 if_chain = "1.0.2"
 futures-lite = "1.12.0"

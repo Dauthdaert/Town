@@ -62,5 +62,5 @@ fn build_thinker() -> ThinkerBuilder {
         .picker(HighestScore::new())
         .when(Thirsty, move_and_drink)
         .when(JobAvailable, take_and_do_jobs)
-        .when(FixedScore::build(0.5), meander)
+        .when(FixedScore(0.5), meander)
 }

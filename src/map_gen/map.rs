@@ -153,15 +153,15 @@ mod test {
     fn world_xy_idx_round_trip() {
         let map = Map::new(1000, 1000);
 
-        assert_eq!(map.world_xy_idx(3200.0, 3200.0), map.world_xy_idx(3216.0, 3216.0));
-        assert_eq!(map.world_xy_idx(3231.0, 3231.0), map.world_xy_idx(3216.0, 3216.0));
+        assert_eq!(map.world_xy_idx(3200.0, 3200.0), map.world_xy_idx(3208.0, 3208.0));
+        assert_eq!(map.world_xy_idx(3215.0, 3215.0), map.world_xy_idx(3208.0, 3208.0));
 
-        let idx = map.world_xy_idx(3216.0, 3216.0);
-        assert_eq!(idx, 100100);
+        let idx = map.world_xy_idx(3208.0, 3208.0);
+        assert_eq!(idx, 200200);
 
         let coords = map.idx_world_xy(idx);
-        assert_eq!(coords.x, 3216.0);
-        assert_eq!(coords.y, 3216.0);
+        assert_eq!(coords.x, 3208.0);
+        assert_eq!(coords.y, 3208.0);
     }
 
     #[test]
