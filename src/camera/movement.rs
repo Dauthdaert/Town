@@ -25,34 +25,36 @@ pub fn movement(
         With<Camera2d>,
     >,
 ) {
-    let (mut transform, mut ortho, camera_movement) = query.single_mut();
+    let (mut transform, mut ortho, camera_movement_action) = query.single_mut();
     let mut direction = Vec3::ZERO;
 
-    if camera_movement.pressed(CameraMovement::PanLeft) {
+    if camera_movement_action.pressed(CameraMovement::PanLeft) {
         direction -= Vec3::new(1.0, 0.0, 0.0);
     }
 
-    if camera_movement.pressed(CameraMovement::PanRight) {
+    if camera_movement_action.pressed(CameraMovement::PanRight) {
         direction += Vec3::new(1.0, 0.0, 0.0);
     }
 
-    if camera_movement.pressed(CameraMovement::PanUp) {
+    if camera_movement_action.pressed(CameraMovement::PanUp) {
         direction += Vec3::new(0.0, 1.0, 0.0);
     }
 
-    if camera_movement.pressed(CameraMovement::PanDown) {
+    if camera_movement_action.pressed(CameraMovement::PanDown) {
         direction -= Vec3::new(0.0, 1.0, 0.0);
     }
 
-    let zoom_delta = camera_movement.value(CameraMovement::Zoom);
+    let zoom_delta = camera_movement_action.value(CameraMovement::Zoom);
     if zoom_delta != 0.00 {
         ortho.scale += zoom_delta * 0.1;
+        ortho.scale = ortho.scale.clamp(CAMERA_MIN_SCALE, CAMERA_MAX_SCALE);
     }
 
-    ortho.scale = ortho.scale.clamp(CAMERA_MIN_SCALE, CAMERA_MAX_SCALE);
-
     let z = transform.translation.z;
+
+    //TODO: Clamp translation to never show outside of map.
     transform.translation += time.delta_seconds() * direction * 500. * ortho.scale;
+
     // Important! We need to restore the Z values when moving the camera
     // around. Bevy has a specific camera setup and this can mess
     // with how our layers are shown.
