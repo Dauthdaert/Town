@@ -54,7 +54,7 @@ iyes_progress = "0.5.*"
 bevy_kira_audio = "0.12.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
 leafwing-input-manager = "0.5.*"
-bevy-inspector-egui = "0.12.*"
+bevy-inspector-egui = "0.13.*"
 bevy_turborand = "0.3.0"
 bevy_asset_loader = "0.12.1"
 big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
