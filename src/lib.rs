@@ -70,6 +70,8 @@ pub fn app() -> App {
         )
         .add_plugin(ProgressPlugin::new(GameStates::Splash));
 
+    app.add_plugin(ProgressPlugin::new(GameStates::GameObjectSpawning).continue_to(GameStates::InGame));
+
     //Add custom plugins
     app.add_plugin(camera::CameraPlugin)
         .add_plugin(map_gen::MapGenPlugin)

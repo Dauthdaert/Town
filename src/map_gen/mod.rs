@@ -36,10 +36,21 @@ pub struct MapGenPlugin;
 
 impl Plugin for MapGenPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::InGame))
+        app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::GameObjectSpawning))
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
-            .add_system(generator::handle_generate_map.run_in_state(GameStates::MapGeneration))
-            .add_exit_system(GameStates::MapGeneration, display::spawn_tiles)
-            .add_exit_system(GameStates::MapGeneration, display::spawn_features);
+            .add_system_set(
+                ConditionSet::new()
+                    .run_in_state(GameStates::MapGeneration)
+                    .with_system(generator::handle_generate_map)
+                    .into(),
+            );
+
+        app.add_system_set(
+            ConditionSet::new()
+                .run_in_state(GameStates::GameObjectSpawning)
+                .with_system(display::spawn_tiles.track_progress())
+                .with_system(display::spawn_features.track_progress())
+                .into(),
+        );
     }
 }

@@ -1,12 +1,15 @@
 use bevy::prelude::*;
 use bevy_turborand::{GlobalRng, RngComponent};
 use big_brain::prelude::*;
+use iyes_progress::Progress;
 
 use crate::{
     animation::{AnimationTimer, SpriteAssets},
     map_gen::{map::Map, TILE_SIZE},
     SIMULATION_SPEED,
 };
+
+const NUM_AI: u32 = 1000;
 
 use super::{
     actions::{
@@ -18,8 +21,14 @@ use super::{
     scorers::{job_available::JobAvailable, thirsty::Thirsty},
 };
 
-pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<SpriteAssets>, mut rng: ResMut<GlobalRng>) {
-    for i in 1..=1000 {
+pub fn spawn_ai(
+    mut commands: Commands,
+    map: Res<Map>,
+    sprite_assets: Res<SpriteAssets>,
+    mut rng: ResMut<GlobalRng>,
+    mut next_ai_id: Local<u32>,
+) -> Progress {
+    for i in *next_ai_id..u32::min(*next_ai_id + 100, NUM_AI) {
         let pos_offset = crate::map_gen::map::tile_xy_world_xy(map.width / 2, map.height / 2);
         commands
             .spawn_bundle(SpriteSheetBundle {
@@ -40,6 +49,13 @@ pub fn spawn_ai(mut commands: Commands, map: Res<Map>, sprite_assets: Res<Sprite
                 RngComponent::from(&mut rng),
                 AnimationTimer(Timer::from_seconds(0.5, true)),
             ));
+
+        *next_ai_id += 1;
+    }
+
+    Progress {
+        done: *next_ai_id,
+        total: NUM_AI,
     }
 }
 

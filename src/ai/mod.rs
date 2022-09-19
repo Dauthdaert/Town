@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use big_brain::prelude::*;
 use iyes_loopless::prelude::*;
+use iyes_progress::ProgressSystem;
 
 use crate::states::GameStates;
 
@@ -16,7 +17,12 @@ impl Plugin for AIPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(BigBrainPlugin);
 
-        app.add_exit_system(GameStates::MapGeneration, spawner::spawn_ai);
+        app.add_system_set(
+            ConditionSet::new()
+                .run_in_state(GameStates::GameObjectSpawning)
+                .with_system(spawner::spawn_ai.track_progress())
+                .into(),
+        );
 
         app.add_system_set(
             ConditionSet::new()

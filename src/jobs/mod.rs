@@ -46,7 +46,7 @@ impl Plugin for JobsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<JobQueue>()
             .add_plugin(InputManagerPlugin::<JobCreationControls>::default())
-            .add_exit_system(GameStates::MapGeneration, setup_job_manager);
+            .add_enter_system(GameStates::GameObjectSpawning, setup_job_manager);
 
         app.add_system_set(
             ConditionSet::new()

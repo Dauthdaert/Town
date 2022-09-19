@@ -16,12 +16,13 @@ pub struct CameraPlugin;
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(InputManagerPlugin::<CameraMovement>::default())
-            .add_exit_system(GameStates::MapGeneration, setup_camera);
+            .add_exit_system(GameStates::GameObjectSpawning, setup_camera);
 
         app.add_system_set(
             ConditionSet::new()
                 .run_not_in_state(GameStates::Splash)
                 .run_not_in_state(GameStates::MapGeneration)
+                .run_not_in_state(GameStates::GameObjectSpawning)
                 .with_system(movement::movement)
                 .into(),
         );
