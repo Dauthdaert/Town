@@ -15,12 +15,13 @@ pub mod components;
 mod display;
 mod features;
 mod generator;
+mod layers;
 pub mod map;
 pub mod neighborhood;
 
 pub use biomes::Biomes;
-pub use display::{FeatureLayer, FeatureLayerObject, TileLayer, TileLayerObject};
 pub use features::Features;
+pub use layers::*;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {

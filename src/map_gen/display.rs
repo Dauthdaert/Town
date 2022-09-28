@@ -2,13 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use iyes_progress::Progress;
 
-use super::{map::Map, TilemapAssets, TILE_SIZE};
-
-#[derive(Component, Clone, Copy, Debug)]
-pub struct TileLayer;
-
-#[derive(Component, Clone, Copy, Debug)]
-pub struct TileLayerObject;
+use super::{map::Map, FeatureLayer, FeatureLayerObject, Layer, TileLayer, TileLayerObject, TilemapAssets, TILE_SIZE};
 
 pub fn spawn_tiles(
     mut commands: Commands,
@@ -55,7 +49,7 @@ pub fn spawn_tiles(
                 storage: tile_storage,
                 texture: TilemapTexture(tilemap_assets.tiles.clone()),
                 tile_size: TILE_SIZE,
-                transform: Transform::from_translation(Vec3::splat(0.0)),
+                transform: Transform::from_translation(Vec3::splat(TileLayer::z_index())),
                 ..default()
             });
 
@@ -64,12 +58,6 @@ pub fn spawn_tiles(
 
     true.into()
 }
-
-#[derive(Component, Clone, Copy, Debug)]
-pub struct FeatureLayer;
-
-#[derive(Component, Clone, Copy, Debug)]
-pub struct FeatureLayerObject;
 
 pub fn spawn_features(
     mut commands: Commands,
@@ -123,7 +111,7 @@ pub fn spawn_features(
                 storage: feature_storage,
                 texture: TilemapTexture(tilemap_assets.features.clone()),
                 tile_size: TILE_SIZE,
-                transform: Transform::from_translation(Vec3::splat(1.0)),
+                transform: Transform::from_translation(Vec3::splat(FeatureLayer::z_index())),
                 ..default()
             });
 
