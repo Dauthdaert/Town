@@ -148,8 +148,8 @@ impl MapGenerator {
                 }
 
                 if blue_noise[idx] == max {
-                    //TODO: Replace checks of max with rng to pick objects.
-                    //TODO: Replace continues with biome specific features.
+                    // TODO!(3, Wayan, 0): Replace checks of max with rng to pick objects.
+                    // TODO!(3, Wayan, 0): Replace continues with biome specific features.
                     self.map.features[idx] = match self.map.tiles[idx] {
                         Biomes::Beach => Some(Features::CoconutTree),
                         Biomes::Scorched => continue,

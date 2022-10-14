@@ -21,7 +21,7 @@ pub enum Biomes {
 
 impl Biomes {
     pub fn texture(&self) -> u32 {
-        //TODO: Way to use alternate sprites
+        // TODO!(2, Wayan, 17): Way to use alternate sprites
         match self {
             Biomes::Shrubland => 6,
             Biomes::Grassland => 7,

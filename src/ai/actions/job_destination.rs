@@ -22,12 +22,12 @@ pub fn job_destination(
                 let actor_has_job = actors.get(*actor).expect("Actor should have a job.");
                 let destination = actor_has_job.job.position;
 
-                //TODO: Check that destination is possible.
+                // TODO!(3, Wayan, 2): Check that destination is possible.
                 commands.entity(*actor).insert(Destination::new(destination, false));
                 *action_state = ActionState::Success;
             }
             ActionState::Cancelled => {
-                //TODO: Cancel job?
+                // TODO!(3, Wayan, 2): Cancel job?
                 *action_state = ActionState::Failure;
             }
             _ => {}

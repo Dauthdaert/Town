@@ -50,7 +50,7 @@ pub fn random_destination(
                 let res = actor_rng.usize(0..filtered.len());
                 let destination = filtered.get(res);
                 if let Some(destination) = destination {
-                    //TODO: Check that destination is possible.
+                    // TODO!(3, Wayan, 2): Check that destination is possible.
                     commands.entity(*actor).insert(Destination::new(**destination, false));
                     *action_state = ActionState::Success;
                 } else {

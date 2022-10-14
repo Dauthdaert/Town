@@ -7,6 +7,7 @@ use super::{map::Map, FeatureLayer, FeatureLayerObject, Layer, TileLayer, TileLa
 pub fn spawn_tiles(
     mut commands: Commands,
     tilemap_assets: Res<TilemapAssets>,
+    array_texture_loader: Res<ArrayTextureLoader>,
     map: Res<Map>,
     mut done: Local<bool>,
 ) -> Progress {
@@ -40,19 +41,24 @@ pub fn spawn_tiles(
                     }
 
                     let tile_entity = tile_builder.insert_bundle((Name::from("Tile"), TileLayerObject)).id();
-                    tile_storage.set(&tile_pos, Some(tile_entity));
+                    tile_storage.set(&tile_pos, tile_entity);
                 }
             })
             .insert_bundle(TilemapBundle {
                 grid_size: TILE_SIZE.into(),
                 size: tilemap_size,
                 storage: tile_storage,
-                texture: TilemapTexture(tilemap_assets.tiles.clone()),
+                texture: TilemapTexture::Single(tilemap_assets.tiles.clone()),
                 tile_size: TILE_SIZE,
                 transform: Transform::from_translation(Vec3::splat(TileLayer::z_index())),
                 ..default()
             });
 
+        array_texture_loader.add(TilemapArrayTexture {
+            texture: TilemapTexture::Single(tilemap_assets.tiles.clone()),
+            tile_size: TILE_SIZE,
+            ..default()
+        });
         *done = true;
     }
 
@@ -62,6 +68,7 @@ pub fn spawn_tiles(
 pub fn spawn_features(
     mut commands: Commands,
     tilemap_assets: Res<TilemapAssets>,
+    array_texture_loader: Res<ArrayTextureLoader>,
     map: Res<Map>,
     mut done: Local<bool>,
 ) -> Progress {
@@ -101,7 +108,7 @@ pub fn spawn_features(
                         let feature_entity = feature_builder
                             .insert_bundle((Name::from("Feature"), FeatureLayerObject))
                             .id();
-                        feature_storage.set(&feature_pos, Some(feature_entity));
+                        feature_storage.set(&feature_pos, feature_entity);
                     }
                 }
             })
@@ -109,12 +116,17 @@ pub fn spawn_features(
                 grid_size: TILE_SIZE.into(),
                 size: feature_map_size,
                 storage: feature_storage,
-                texture: TilemapTexture(tilemap_assets.features.clone()),
+                texture: TilemapTexture::Single(tilemap_assets.features.clone()),
                 tile_size: TILE_SIZE,
                 transform: Transform::from_translation(Vec3::splat(FeatureLayer::z_index())),
                 ..default()
             });
 
+        array_texture_loader.add(TilemapArrayTexture {
+            texture: TilemapTexture::Single(tilemap_assets.features.clone()),
+            tile_size: TILE_SIZE,
+            ..default()
+        });
         *done = true;
     }
 

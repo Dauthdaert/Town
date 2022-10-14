@@ -28,8 +28,7 @@ pub fn handle_job_creation_hotkeys(
     if job_creation_menu.just_pressed(JobCreationControls::Select) {
         let world_tile = world_xy_tile_xy(mouse_pos.xy());
         if let Some(selection) = selection {
-            //TODO: Take the opportunity to add a ring around the
-            // tree to indicate the job maybe?
+            // TODO!(3, Wayan, 0): Take the opportunity to add a ring around the tree to indicate the job maybe?
             let feature_tile_storage = feature_tiles_query.single();
             for x in u32::min(selection.x, world_tile.x)..=u32::max(selection.x, world_tile.x) {
                 for y in u32::min(selection.y, world_tile.y)..=u32::max(selection.y, world_tile.y) {

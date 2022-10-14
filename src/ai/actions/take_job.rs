@@ -22,7 +22,7 @@ pub fn take_job(
             ActionState::Executing => {
                 let actor_has_job = actors.get(*actor).expect("Actor should have JobSeeker.");
                 if actor_has_job.is_none() {
-                    //TODO: Improve job selection to incorporate distance to actor to prioritise jobs.
+                    // TODO!(2, Wayan, 1): Improve job selection to incorporate distance to actor to prioritise jobs.
                     let job = job_queue.jobs.pop_front();
                     if let Some(job) = job {
                         commands.entity(*actor).insert(HasJob::new(job));

@@ -52,7 +52,7 @@ pub fn movement(
 
     let z = transform.translation.z;
 
-    //TODO: Clamp translation to never show outside of map.
+    // TODO!(1, Wayan, 1): Clamp translation to never show outside of map.
     transform.translation += time.delta_seconds() * direction * 500. * ortho.scale;
 
     // Important! We need to restore the Z values when moving the camera
