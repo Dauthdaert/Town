@@ -115,16 +115,16 @@ impl Map {
 #[allow(dead_code)]
 pub fn world_xy_tile_xy(position: Vec2) -> TilePos {
     TilePos::new(
-        (position.x / TILE_SIZE.x).floor() as u32,
-        (position.y / TILE_SIZE.y).floor() as u32,
+        ((position.x / TILE_SIZE.x) + 0.5).floor() as u32,
+        ((position.y / TILE_SIZE.y) + 0.5).floor() as u32,
     )
 }
 
 #[allow(dead_code)]
 pub fn tile_xy_world_xy(x: u32, y: u32) -> Vec2 {
     Vec2 {
-        x: x as f32 * TILE_SIZE.x + TILE_SIZE.x * 0.5,
-        y: y as f32 * TILE_SIZE.y + TILE_SIZE.y * 0.5,
+        x: x as f32 * TILE_SIZE.x,
+        y: y as f32 * TILE_SIZE.y,
     }
 }
 
