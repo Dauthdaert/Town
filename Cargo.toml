@@ -53,7 +53,7 @@ iyes_loopless = "0.7.*"
 iyes_progress = "0.5.*"
 bevy_kira_audio = "0.12.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
-leafwing-input-manager = "0.5.*"
+leafwing-input-manager = "0.6.*"
 bevy-inspector-egui = "0.13.*"
 bevy_turborand = "0.3.*"
 bevy_asset_loader = "0.12.*"
