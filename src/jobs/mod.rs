@@ -9,17 +9,19 @@ pub mod job_queue;
 
 use job_queue::*;
 
-use crate::{cleanup_entity_by_component, cleanup_resource, states::GameStates};
+use crate::{cleanup_entity_by_component, cleanup_resource, map_gen::Features, states::GameStates};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Jobs {
     Chop,
+    Build(Features),
 }
 
 impl Jobs {
     pub fn speed(&self) -> f32 {
         match self {
             Jobs::Chop => 10.0,
+            Jobs::Build(_) => 50.0,
         }
     }
 }
@@ -30,6 +32,8 @@ pub struct JobSelectionType(Jobs);
 #[derive(Actionlike, Clone, Debug, Copy, PartialEq, Eq)]
 pub enum JobCreationControls {
     Chop,
+    BuildWall,
+    BuildFloor,
     Select,
     Exit,
 }
@@ -76,11 +80,14 @@ impl Plugin for JobsPlugin {
 pub struct JobCreationMenuManager;
 
 fn setup_job_manager(mut commands: Commands) {
+    // TODO!(2, Wayan, 12): Job creation selection should be a menu
     commands
         .spawn_bundle(InputManagerBundle::<JobCreationControls> {
             action_state: ActionState::default(),
             input_map: InputMap::default()
                 .insert(KeyCode::C, JobCreationControls::Chop)
+                .insert(KeyCode::W, JobCreationControls::BuildWall)
+                .insert(KeyCode::F, JobCreationControls::BuildFloor)
                 .insert(KeyCode::Return, JobCreationControls::Select)
                 .insert(MouseButton::Left, JobCreationControls::Select)
                 .insert(KeyCode::Escape, JobCreationControls::Exit)
@@ -98,6 +105,12 @@ fn handle_job_enter_hotkeys(
     if job_creation_menu.just_pressed(JobCreationControls::Chop) {
         commands.insert_resource(NextState(GameStates::InJobSelection));
         commands.insert_resource(JobSelectionType(Jobs::Chop));
+    } else if job_creation_menu.just_pressed(JobCreationControls::BuildWall) {
+        commands.insert_resource(NextState(GameStates::InJobSelection));
+        commands.insert_resource(JobSelectionType(Jobs::Build(Features::Wall)));
+    } else if job_creation_menu.just_pressed(JobCreationControls::BuildFloor) {
+        commands.insert_resource(NextState(GameStates::InJobSelection));
+        commands.insert_resource(JobSelectionType(Jobs::Build(Features::Floor)));
     }
 }
 

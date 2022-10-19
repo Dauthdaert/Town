@@ -101,8 +101,8 @@ pub fn spawn_features(
                             feature_builder.insert(super::components::Choppable);
                         }
 
-                        if feature.is_minable() {
-                            feature_builder.insert(super::components::Minable);
+                        if feature.is_destructable() {
+                            feature_builder.insert(super::components::Destructable);
                         }
 
                         let feature_entity = feature_builder
@@ -131,4 +131,63 @@ pub fn spawn_features(
     }
 
     true.into()
+}
+
+struct SpawnFeatureCommand {
+    pos: TilePos,
+    feature: super::Features,
+}
+
+impl bevy::ecs::system::Command for SpawnFeatureCommand {
+    fn write(self, world: &mut World) {
+        let feature_layer = world
+            .query_filtered::<Entity, With<FeatureLayer>>()
+            .get_single(world)
+            .expect("Should only be one FeatureLayer.");
+
+        let mut feature_builder = world.spawn();
+
+        if self.feature.is_obstacle() {
+            feature_builder.insert(super::components::Obstacle);
+        }
+
+        if self.feature.is_choppable() {
+            feature_builder.insert(super::components::Choppable);
+        }
+
+        if self.feature.is_destructable() {
+            feature_builder.insert(super::components::Destructable);
+        }
+
+        let feature_entity = feature_builder
+            .insert_bundle((Name::from("Feature"), FeatureLayerObject))
+            .insert_bundle(TileBundle {
+                position: self.pos,
+                tilemap_id: TilemapId(feature_layer),
+                texture: TileTexture(self.feature.texture()),
+                ..default()
+            })
+            .id();
+
+        world
+            .query_filtered::<&mut TileStorage, With<FeatureLayer>>()
+            .get_single_mut(world)
+            .expect("Should only be one FeatureLayer.")
+            .set(&self.pos, feature_entity);
+        world.entity_mut(feature_layer).push_children(&[feature_entity]);
+    }
+}
+
+pub trait CommandsFeatureExt {
+    fn spawn_feature(&mut self, feature_pos: TilePos, feature: super::Features) -> &mut Self;
+}
+
+impl CommandsFeatureExt for Commands<'_, '_> {
+    fn spawn_feature(&mut self, feature_pos: TilePos, feature: super::Features) -> &mut Self {
+        self.add(SpawnFeatureCommand {
+            pos: feature_pos,
+            feature,
+        });
+        self
+    }
 }

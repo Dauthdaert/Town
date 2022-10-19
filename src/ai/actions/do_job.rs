@@ -4,8 +4,8 @@ use big_brain::prelude::*;
 
 use crate::map_gen::{
     components::{Choppable, Growing},
-    map::{world_xy_tile_xy, Map},
-    FeatureLayer, Features,
+    map::{world_xy_tile_xy, Map, MapPathfinding},
+    CommandsFeatureExt, FeatureLayer, Features,
 };
 
 use super::components::HasJob;
@@ -16,6 +16,7 @@ pub struct DoJob;
 pub fn do_job(
     mut commands: Commands,
     mut map: ResMut<Map>,
+    mut map_pathfinding: ResMut<MapPathfinding>,
     time: Res<Time>,
     mut actors: Query<(&Transform, &mut HasJob)>,
     features_query: Query<&TileStorage, With<FeatureLayer>>,
@@ -35,22 +36,31 @@ pub fn do_job(
                     actor_job.progress += actor_job.job.job_type.speed() * time.delta_seconds();
 
                     if actor_job.progress >= 100.0 {
-                        let feature = features_query
-                            .get_single()
-                            .expect("Should only be one feature layer.")
-                            .get(&actor_job.job.position);
-                        if let Some(feature) = feature {
-                            match actor_job.job.job_type {
-                                crate::jobs::Jobs::Chop => {
-                                    //TODO: Have better job duplication logic in an earlier step.
-                                    if let Ok(tree) = trees.get_mut(feature) {
+                        match actor_job.job.job_type {
+                            crate::jobs::Jobs::Chop => {
+                                // TODO!(3, Wayan, 0): Have better job duplication logic in an earlier step.
+                                let feature = features_query
+                                    .get_single()
+                                    .expect("Should only be one feature layer.")
+                                    .get(&actor_job.job.position);
+                                if let Some(feature_layer) = feature {
+                                    if let Ok(tree) = trees.get_mut(feature_layer) {
                                         do_chop(&actor_job.job.position, &mut map, tree, &mut commands);
                                     }
                                 }
                             }
-                            commands.entity(*actor).remove::<HasJob>();
-                            *action_state = ActionState::Success;
+                            crate::jobs::Jobs::Build(feature) => {
+                                do_build(
+                                    &actor_job.job.position,
+                                    feature,
+                                    &mut map,
+                                    &mut map_pathfinding,
+                                    &mut commands,
+                                );
+                            }
                         }
+                        commands.entity(*actor).remove::<HasJob>();
+                        *action_state = ActionState::Success;
                     }
                 } else {
                     //We're too far away.
@@ -65,8 +75,8 @@ pub fn do_job(
     }
 }
 
-fn do_chop(feature_pos: &TilePos, map: &mut Map, tree: (Entity, Mut<TileTexture>), commands: &mut Commands) {
-    let idx = map.tile_xy_idx(feature_pos.x, feature_pos.y);
+fn do_chop(tree_pos: &TilePos, map: &mut Map, tree: (Entity, Mut<TileTexture>), commands: &mut Commands) {
+    let idx = map.tile_xy_idx(tree_pos.x, tree_pos.y);
     let (entity, mut entity_texture) = tree;
 
     let current_feature = map.features[idx];
@@ -84,4 +94,17 @@ fn do_chop(feature_pos: &TilePos, map: &mut Map, tree: (Entity, Mut<TileTexture>
     } else {
         commands.entity(entity).despawn_recursive();
     }
+}
+
+fn do_build(
+    build_pos: &TilePos,
+    feature: Features,
+    map: &mut Map,
+    map_pathfinding: &mut MapPathfinding,
+    commands: &mut Commands,
+) {
+    let idx = map.tile_xy_idx(build_pos.x, build_pos.y);
+    map.features[idx] = Some(feature);
+    map_pathfinding.announce_tile_changed(map, build_pos);
+    commands.spawn_feature(*build_pos, feature);
 }

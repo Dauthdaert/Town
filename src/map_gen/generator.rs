@@ -1,7 +1,12 @@
 use futures_lite::future;
 use iyes_progress::ProgressCounter;
 
-use super::{biomes::Biomes, features::Features, map::Map, MAP_HEIGHT, MAP_WIDTH};
+use super::{
+    biomes::Biomes,
+    features::Features,
+    map::{Map, MapPathfinding},
+    MAP_HEIGHT, MAP_WIDTH,
+};
 use bevy::{
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
@@ -10,7 +15,7 @@ use bevy_turborand::{DelegatedRng, GlobalRng};
 use noise::{Exponent, Fbm, NoiseFn, OpenSimplex, ScaleBias, ScalePoint};
 
 #[derive(Component)]
-pub struct GenerateMap(Task<Map>);
+pub struct GenerateMap(Task<(Map, MapPathfinding)>);
 
 pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalRng>) {
     let thread_pool = AsyncComputeTaskPool::get();
@@ -18,12 +23,12 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
     let m_seed = global_rng.u32(u32::MIN..u32::MAX);
 
     let task = thread_pool.spawn(async move {
-        let mut map = MapGenerator::new(MAP_WIDTH, MAP_HEIGHT, e_seed, m_seed)
+        let map = MapGenerator::new(MAP_WIDTH, MAP_HEIGHT, e_seed, m_seed)
             .generate_tiles()
             .generate_features()
             .build();
-        map.init_path_cache();
-        map
+        let map_pathfinding = MapPathfinding::new(&map);
+        (map, map_pathfinding)
     });
     commands.spawn().insert(GenerateMap(task));
 }
@@ -34,8 +39,9 @@ pub fn handle_generate_map(
     progress: Res<ProgressCounter>,
 ) {
     let (gen_map_entity, mut gen_map_task) = gen_map_tasks.single_mut();
-    if let Some(map) = future::block_on(future::poll_once(&mut gen_map_task.0)) {
+    if let Some((map, map_pathfinding)) = future::block_on(future::poll_once(&mut gen_map_task.0)) {
         commands.insert_resource(map);
+        commands.insert_resource(map_pathfinding);
         commands.entity(gen_map_entity).despawn();
 
         progress.manually_track(true.into());

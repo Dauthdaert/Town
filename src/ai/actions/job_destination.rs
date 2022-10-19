@@ -23,7 +23,10 @@ pub fn job_destination(
                 let destination = actor_has_job.job.position;
 
                 // TODO!(3, Wayan, 2): Check that destination is possible.
-                commands.entity(*actor).insert(Destination::new(destination, false));
+                let approximate = matches!(actor_has_job.job.job_type, crate::jobs::Jobs::Build(_));
+                commands
+                    .entity(*actor)
+                    .insert(Destination::new(destination, approximate));
                 *action_state = ActionState::Success;
             }
             ActionState::Cancelled => {

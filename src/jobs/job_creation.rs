@@ -41,6 +41,14 @@ pub fn handle_job_creation_hotkeys(
                                 }
                             }
                         }
+                        Jobs::Build(feature) => {
+                            let entity = feature_tile_storage.get(&TilePos::new(x, y));
+                            if entity.is_none() {
+                                job_queue
+                                    .jobs
+                                    .push_back(Job::new(Jobs::Build(feature), TilePos::new(x, y)));
+                            }
+                        }
                     }
                 }
             }

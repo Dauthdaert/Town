@@ -20,6 +20,7 @@ pub mod map;
 pub mod neighborhood;
 
 pub use biomes::Biomes;
+pub use display::CommandsFeatureExt;
 pub use features::Features;
 pub use layers::*;
 

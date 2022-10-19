@@ -20,11 +20,48 @@ fn cost_fn(map: &Map) -> impl '_ + Sync + Fn((usize, usize)) -> isize {
     }
 }
 
+pub struct MapPathfinding {
+    pub path_cache: PathCache<EuclideanNeighborhood>,
+}
+
+impl MapPathfinding {
+    pub fn new(map: &Map) -> Self {
+        let height = map.height.try_into().unwrap();
+        let width = map.width.try_into().unwrap();
+
+        Self {
+            path_cache: PathCache::new(
+                (width, height),
+                cost_fn(map),
+                map.neighborhood,
+                PathCacheConfig::with_chunk_size(30),
+            ),
+        }
+    }
+
+    pub fn get_path(
+        &self,
+        map: &Map,
+        start_tile: TilePos,
+        goal_tile: TilePos,
+    ) -> Option<AbstractPath<EuclideanNeighborhood>> {
+        self.path_cache.find_path(
+            (start_tile.x.try_into().unwrap(), start_tile.y.try_into().unwrap()),
+            (goal_tile.x.try_into().unwrap(), goal_tile.y.try_into().unwrap()),
+            cost_fn(map),
+        )
+    }
+
+    pub fn announce_tile_changed(&mut self, map: &Map, tile: &TilePos) {
+        self.path_cache
+            .tiles_changed(&[(tile.x as usize, tile.y as usize)], cost_fn(map));
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Map {
     pub tiles: Vec<Biomes>,
     pub features: Vec<Option<Features>>,
-    pub path_cache: Option<PathCache<EuclideanNeighborhood>>,
     pub neighborhood: EuclideanNeighborhood,
     pub height: u32,
     pub width: u32,
@@ -38,31 +75,7 @@ impl Map {
             height,
             width,
             neighborhood: EuclideanNeighborhood::new(width.try_into().unwrap(), height.try_into().unwrap()),
-            path_cache: None,
         }
-    }
-
-    pub fn init_path_cache(&mut self) {
-        let height = self.height.try_into().unwrap();
-        let width = self.width.try_into().unwrap();
-
-        self.path_cache = Some(PathCache::new(
-            (width, height),
-            cost_fn(self),
-            self.neighborhood,
-            PathCacheConfig::with_chunk_size(30),
-        ));
-    }
-
-    pub fn get_path(&self, start_tile: TilePos, goal_tile: TilePos) -> Option<AbstractPath<EuclideanNeighborhood>> {
-        self.path_cache
-            .as_ref()
-            .expect("Path cache should be initialized before calling get_path.")
-            .find_path(
-                (start_tile.x.try_into().unwrap(), start_tile.y.try_into().unwrap()),
-                (goal_tile.x.try_into().unwrap(), goal_tile.y.try_into().unwrap()),
-                cost_fn(self),
-            )
     }
 
     #[allow(dead_code)]

@@ -6,7 +6,7 @@ use hierarchical_pathfinding::{internals::AbstractPath, prelude::Neighborhood};
 use crate::{
     ai::characteristics::Speed,
     map_gen::{
-        map::{is_neighbor, tile_xy_world_xy, world_xy_tile_xy, Map},
+        map::{is_neighbor, tile_xy_world_xy, world_xy_tile_xy, Map, MapPathfinding},
         neighborhood::EuclideanNeighborhood,
     },
 };
@@ -22,6 +22,7 @@ pub struct MoveToDestination {
 pub fn move_to_destination(
     time: Res<Time>,
     map: Res<Map>,
+    map_pathfiding: Res<MapPathfinding>,
     mut query: Query<(&mut Transform, &Destination, &Speed)>,
     mut actions: Query<(&Actor, &mut ActionState, &mut MoveToDestination)>,
 ) {
@@ -32,22 +33,55 @@ pub fn move_to_destination(
                     query.get(*actor).expect("Actor has no position or destination.");
 
                 let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
-                let path = if let Some(path) = map.get_path(actor_tile, actor_destination.destination) {
+                let mut actor_tiles = vec![(actor_tile.x as usize, actor_tile.y as usize)];
+                map.neighborhood.get_all_neighbors(
+                    (actor_tile.x.try_into().unwrap(), actor_tile.y.try_into().unwrap()),
+                    &mut actor_tiles,
+                );
+
+                let path = if let Some(path) = actor_tiles.iter().find_map(|start| {
+                    if !map.is_passable(start.0 as u32, start.1 as u32)
+                        || !map.is_passable(actor_destination.destination.x, actor_destination.destination.y)
+                    {
+                        return None;
+                    }
+
+                    map_pathfiding.get_path(
+                        &map,
+                        TilePos::new(start.0 as u32, start.1 as u32),
+                        actor_destination.destination,
+                    )
+                }) {
                     Some(path)
                 } else if actor_destination.approximate {
-                    let mut tiles = Vec::new();
+                    let mut destination_tiles = vec![(
+                        actor_destination.destination.x as usize,
+                        actor_destination.destination.y as usize,
+                    )];
                     map.neighborhood.get_all_neighbors(
                         (
                             actor_destination.destination.x.try_into().unwrap(),
                             actor_destination.destination.y.try_into().unwrap(),
                         ),
-                        &mut tiles,
+                        &mut destination_tiles,
                     );
-                    tiles.iter().find_map(|tile| {
-                        map.get_path(
-                            actor_tile,
-                            TilePos::new(tile.0.try_into().unwrap(), tile.1.try_into().unwrap()),
-                        )
+
+                    actor_tiles.iter().find_map(|start| {
+                        if !map.is_passable(start.0 as u32, start.1 as u32) {
+                            return None;
+                        }
+
+                        destination_tiles.iter().find_map(|end| {
+                            if !map.is_passable(end.0 as u32, end.1 as u32) {
+                                return None;
+                            }
+
+                            map_pathfiding.get_path(
+                                &map,
+                                TilePos::new(start.0.try_into().unwrap(), start.1.try_into().unwrap()),
+                                TilePos::new(end.0.try_into().unwrap(), end.1.try_into().unwrap()),
+                            )
+                        })
                     })
                 } else {
                     None
