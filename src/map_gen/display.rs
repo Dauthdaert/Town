@@ -9,9 +9,9 @@ pub fn spawn_tiles(
     tilemap_assets: Res<TilemapAssets>,
     array_texture_loader: Res<ArrayTextureLoader>,
     map: Res<Map>,
-    mut done: Local<bool>,
+    tile_layer_query: Query<Entity, With<TileLayer>>,
 ) -> Progress {
-    if !*done {
+    if tile_layer_query.is_empty() {
         let tilemap_size = TilemapSize {
             x: map.width,
             y: map.height,
@@ -59,7 +59,6 @@ pub fn spawn_tiles(
             tile_size: TILE_SIZE,
             ..default()
         });
-        *done = true;
     }
 
     true.into()
@@ -70,9 +69,9 @@ pub fn spawn_features(
     tilemap_assets: Res<TilemapAssets>,
     array_texture_loader: Res<ArrayTextureLoader>,
     map: Res<Map>,
-    mut done: Local<bool>,
+    feature_layer_query: Query<Entity, With<FeatureLayer>>,
 ) -> Progress {
-    if !*done {
+    if feature_layer_query.is_empty() {
         let feature_map_size = TilemapSize {
             x: map.width,
             y: map.height,
@@ -127,7 +126,6 @@ pub fn spawn_features(
             tile_size: TILE_SIZE,
             ..default()
         });
-        *done = true;
     }
 
     true.into()
