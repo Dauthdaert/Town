@@ -14,7 +14,8 @@ const NUM_AI: u32 = 1000;
 use super::{
     actions::{
         do_job::DoJob, drink::Drink, job_destination::JobDestination, move_to_destination::MoveToDestination,
-        random_destination::RandomDestination, take_job::TakingJob, water_source_destination::WaterSourceDestination,
+        random_destination::RandomDestinationBuilder, take_job::TakingJob,
+        water_source_destination::WaterSourceDestination,
     },
     characteristics::*,
     pickers::highest_score::HighestScore,
@@ -67,7 +68,7 @@ fn build_thinker() -> ThinkerBuilder {
             per_second: 10.0 * SIMULATION_SPEED,
         });
     let meander = Steps::build()
-        .step(RandomDestination)
+        .step(RandomDestinationBuilder)
         .step(MoveToDestination::default());
     let take_and_do_jobs = Steps::build()
         .step(TakingJob)

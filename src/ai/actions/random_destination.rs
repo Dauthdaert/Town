@@ -1,6 +1,6 @@
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
-use bevy_turborand::{DelegatedRng, RngComponent};
+use bevy_turborand::{rng::Rng, DelegatedRng, RngComponent};
 use big_brain::prelude::*;
 use if_chain::if_chain;
 
@@ -14,24 +14,35 @@ use super::components::Destination;
 
 const MAX_DESTINATION_DISTANCE: f32 = 100.0 * TILE_SIZE.x;
 
-#[derive(Component, Clone, Debug)]
+#[derive(Debug)]
+pub struct RandomDestinationBuilder;
+
+impl ActionBuilder for RandomDestinationBuilder {
+    fn build(&self, cmd: &mut Commands, action: Entity, _actor: Entity) {
+        let rng = Rng::new();
+        cmd.entity(action).insert(RandomDestination);
+        cmd.entity(action).insert(RngComponent::from(&rng));
+    }
+}
+
+#[derive(Component, Debug)]
 pub struct RandomDestination;
 
 pub fn random_destination(
-    mut commands: Commands,
+    commands: ParallelCommands,
     tiles: Query<&TilePos, (With<TileLayerObject>, Without<Obstacle>)>,
     map: Res<Map>,
-    mut query: Query<(&Transform, &mut RngComponent)>,
-    mut actions: Query<(&Actor, &mut ActionState, &RandomDestination)>,
+    query: Query<&Transform>,
+    mut actions: Query<(&Actor, &mut ActionState, &RandomDestination, &mut RngComponent)>,
 ) {
-    for (Actor(actor), mut action_state, _move_to) in actions.iter_mut() {
+    actions.par_for_each_mut(10, |(Actor(actor), mut action_state, _move_to, mut rng)| {
         match *action_state {
             ActionState::Requested => {
                 *action_state = ActionState::Executing;
             }
             ActionState::Executing => {
-                let (actor_position, mut actor_rng) =
-                    query.get_mut(*actor).expect("Actor should have RNG and Transform.");
+                let actor_position =
+                    query.get(*actor).expect("Actor should have Transform.");
                 let filtered: Vec<&TilePos> = tiles
                     .iter()
                     .filter(|t| {
@@ -47,11 +58,13 @@ pub fn random_destination(
                         }
                     })
                     .collect();
-                let res = actor_rng.usize(0..filtered.len());
+                let res = rng.usize(0..filtered.len());
                 let destination = filtered.get(res);
                 if let Some(destination) = destination {
                     // TODO!(3, Wayan, 2): Check that destination is possible.
-                    commands.entity(*actor).insert(Destination::new(**destination, false));
+                    commands.command_scope(|mut commands| {
+                        commands.entity(*actor).insert(Destination::new(**destination, false));
+                    });
                     *action_state = ActionState::Success;
                 } else {
                     error!("Failed to get a random destination.");
@@ -62,6 +75,6 @@ pub fn random_destination(
                 *action_state = ActionState::Failure;
             }
             _ => {}
-        }
     }
+    });
 }
