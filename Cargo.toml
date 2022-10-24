@@ -40,7 +40,10 @@ default = [
     "bevy_asset_loader/2d",
     "bevy_asset_loader/stageless",
     "bevy_asset_loader/progress_tracking",
-    "bevy_asset_loader/progress_tracking_stageless"
+    "bevy_asset_loader/progress_tracking_stageless",
+    "iyes_loopless/app",
+    "iyes_loopless/states",
+    "iyes_loopless/bevy-compat"
 ]
 
 dev = [
@@ -49,7 +52,7 @@ dev = [
 
 [dependencies]
 bevy = { version = "0.8.*", default-features = false }
-iyes_loopless = "0.8.*"
+iyes_loopless = { version = "0.8.*", default-features = false }
 iyes_progress = "0.5.*"
 bevy_kira_audio = "0.12.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
