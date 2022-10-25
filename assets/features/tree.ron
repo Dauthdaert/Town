@@ -1,0 +1,11 @@
+(
+	name: "Tree",
+	tile: Variant([
+		(
+			tile: Standard("features/tree/var-1.png")
+		),
+		(
+			tile: Standard("features/tree/var-2.png")
+		)
+	])
+)

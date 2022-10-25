@@ -1,0 +1,17 @@
+(
+	name: Some("Tiles"),
+	id: 0,
+	tiles: {
+		0: "../tiles/empty.ron",
+		1: "../tiles/ocean.ron",
+		2: "../tiles/shrubland.ron",
+		3: "../tiles/grassland.ron",
+		4: "../tiles/scorched.ron",
+		5: "../tiles/taiga.ron",
+		6: "../tiles/tundra.ron",
+		7: "../tiles/snow.ron",
+		8: "../tiles/forest.ron",
+		9: "../tiles/desert.ron",
+		10: "../tiles/stone.ron"
+	}
+)

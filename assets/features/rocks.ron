@@ -1,0 +1,14 @@
+(
+	name: "Rocks",
+	tile: Variant([
+		(
+			tile: Standard("features/rocks/var-1.png")
+		),
+		(
+			tile: Standard("features/rocks/var-2.png")
+		),
+		(
+			tile: Standard("features/rocks/var-3.png")
+		)
+	])
+)

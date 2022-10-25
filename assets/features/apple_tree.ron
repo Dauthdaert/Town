@@ -1,0 +1,4 @@
+(
+	name: "AppleTree",
+	tile: Standard("features/apple_tree.png")
+)

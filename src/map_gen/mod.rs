@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use bevy_tileset::prelude::*;
 use iyes_loopless::prelude::*;
 use iyes_progress::prelude::*;
 
@@ -20,16 +21,18 @@ pub mod map;
 pub mod neighborhood;
 
 pub use biomes::Biomes;
-pub use display::CommandsFeatureExt;
+pub use display::FeatureQuery;
 pub use features::Features;
 pub use layers::*;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
-    #[asset(path = "textures/16x16/tiles.png")]
-    tiles: Handle<Image>,
-    #[asset(path = "textures/16x16/features.png")]
-    features: Handle<Image>,
+    #[allow(dead_code)]
+    #[asset(path = "tilesets/tiles.ron")]
+    tiles: Handle<Tileset>,
+    #[allow(dead_code)]
+    #[asset(path = "tilesets/features.ron")]
+    features: Handle<Tileset>,
 }
 
 impl TilemapAssets {}
@@ -38,6 +41,8 @@ pub struct MapGenPlugin;
 
 impl Plugin for MapGenPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugin(TilesetPlugin::default());
+
         app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::GameObjectSpawning))
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
             .add_system_set(

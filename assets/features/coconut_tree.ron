@@ -1,0 +1,13 @@
+(
+	name: "CoconutTree",
+	tile: Variant([
+		(
+			weight: 1.0,
+			tile: Standard("features/coconut_tree/var-1.png")
+		),
+		(
+			weight: 1.0,
+			tile: Standard("features/coconut_tree/var-2.png")
+		)
+	])
+)

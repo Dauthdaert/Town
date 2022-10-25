@@ -1,37 +1,41 @@
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Features {
-    Stump,
+    TreeStump,
     Tree,
     AppleTree,
-    CoconutStump,
+    AppleTreeEmpty,
+    CoconutTreeStump,
     CoconutTree,
     Cactus,
-    Bush,
+    BerryBush,
+    BerryBushEmpty,
     Rocks,
-    Stone,
+    StoneWall,
     Wall,
     Floor,
 }
 
 impl Features {
-    pub fn texture(&self) -> u32 {
+    pub fn tile_name(&self) -> &str {
         match self {
-            Features::Tree => 4,
-            Features::AppleTree => 1,
-            Features::CoconutTree => 7,
-            Features::Cactus => 12,
-            Features::Bush => 10,
-            Features::Rocks => 15,
-            Features::Stump => 3,
-            Features::CoconutStump => 6,
-            Features::Stone => 18,
-            Features::Wall => 24,
-            Features::Floor => 21,
+            Features::TreeStump => "TreeStump",
+            Features::Tree => "Tree",
+            Features::AppleTree => "AppleTree",
+            Features::AppleTreeEmpty => "AppleTreeEmpty",
+            Features::CoconutTreeStump => "CoconutTreeStump",
+            Features::CoconutTree => "CoconutTree",
+            Features::Cactus => "Cactus",
+            Features::BerryBush => "BerryBush",
+            Features::BerryBushEmpty => "BerryBushEmpty",
+            Features::Rocks => "Rocks",
+            Features::StoneWall => "StoneWall",
+            Features::Wall => "Wall",
+            Features::Floor => "Floor",
         }
     }
 
     pub fn is_obstacle(&self) -> bool {
-        matches!(self, Features::Stone | Features::Wall)
+        matches!(self, Features::StoneWall | Features::Wall)
     }
 
     pub fn is_choppable(&self) -> bool {
@@ -41,7 +45,7 @@ impl Features {
     pub fn is_destructable(&self) -> bool {
         matches!(
             self,
-            Features::Stone | Features::Rocks | Features::Wall | Features::Floor
+            Features::StoneWall | Features::Rocks | Features::Wall | Features::Floor
         )
     }
 }
