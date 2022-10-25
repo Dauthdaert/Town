@@ -4,7 +4,7 @@ pub enum Biomes {
     Ocean,
     Beach,
     Scorched,
-    Bare,
+    Stone,
     Snow,
     Taiga,
     Tundra,
@@ -16,29 +16,26 @@ pub enum Biomes {
     SubtropicalDesert,
     TropicalSeasonalForest,
     TropicalRainForest,
-    None,
+    Empty,
 }
 
 impl Biomes {
-    pub fn texture(&self) -> u32 {
-        // TODO!(2, Wayan, 17): Way to use alternate sprites
+    pub fn tile_name(&self) -> &str {
         match self {
-            Biomes::Shrubland => 6,
-            Biomes::Grassland => 7,
-            Biomes::Ocean => 1,
-            Biomes::TemperateDeciduousForest => 12,
-            Biomes::TemperateRainForest => 12,
-            Biomes::TropicalSeasonalForest => 12,
-            Biomes::TropicalRainForest => 12,
-            Biomes::Bare => 25,
-            Biomes::Snow => 11,
-            Biomes::Taiga => 9,
-            Biomes::Tundra => 10,
-            Biomes::Beach => 18,
-            Biomes::TemperateDesert => 18,
-            Biomes::SubtropicalDesert => 18,
-            Biomes::Scorched => 8,
-            Biomes::None => 0,
+            Biomes::Ocean => "Ocean",
+            Biomes::Beach | Biomes::TemperateDesert | Biomes::SubtropicalDesert => "Desert",
+            Biomes::Scorched => "Scorched",
+            Biomes::Stone => "Stone",
+            Biomes::Snow => "Snow",
+            Biomes::Taiga => "Taiga",
+            Biomes::Tundra => "Tundra",
+            Biomes::Shrubland => "Shrubland",
+            Biomes::Grassland => "Grassland",
+            Biomes::TemperateDeciduousForest
+            | Biomes::TemperateRainForest
+            | Biomes::TropicalSeasonalForest
+            | Biomes::TropicalRainForest => "Forest",
+            Biomes::Empty => "Empty",
         }
     }
 
@@ -47,7 +44,7 @@ impl Biomes {
             Biomes::Ocean => -1,
             Biomes::Beach => 140,
             Biomes::Scorched => 140,
-            Biomes::Bare => 100,
+            Biomes::Stone => 100,
             Biomes::Snow => 170,
             Biomes::Taiga => 100,
             Biomes::Tundra => 140,
@@ -59,7 +56,7 @@ impl Biomes {
             Biomes::TemperateRainForest => 150,
             Biomes::TropicalSeasonalForest => 150,
             Biomes::TropicalRainForest => 150,
-            Biomes::None => -1,
+            Biomes::Empty => -1,
         }
     }
 

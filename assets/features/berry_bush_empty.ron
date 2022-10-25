@@ -1,0 +1,4 @@
+(
+	name: "BerryBushEmpty",
+	tile: Standard("features/berry_bush_empty.png")
+)

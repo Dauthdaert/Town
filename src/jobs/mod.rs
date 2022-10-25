@@ -40,7 +40,7 @@ pub enum JobCreationControls {
 
 #[derive(AssetCollection)]
 pub struct JobCreationMenuAssets {
-    #[asset(path = "textures/16x16/cursor.png")]
+    #[asset(path = "textures/cursor.png")]
     pub cursor: Handle<Image>,
 }
 

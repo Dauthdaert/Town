@@ -125,7 +125,7 @@ impl MapGenerator {
                 let r = match self.map.tiles[idx] {
                     Biomes::Beach => 8,
                     Biomes::Scorched => 9,
-                    Biomes::Bare => 0,
+                    Biomes::Stone => 0,
                     Biomes::Snow => 9,
                     Biomes::Taiga => 6,
                     Biomes::Tundra => 7,
@@ -137,7 +137,7 @@ impl MapGenerator {
                     Biomes::SubtropicalDesert => 8,
                     Biomes::TropicalSeasonalForest => 1,
                     Biomes::TropicalRainForest => 1,
-                    Biomes::None | Biomes::Ocean => {
+                    Biomes::Empty | Biomes::Ocean => {
                         continue;
                     }
                 };
@@ -159,13 +159,13 @@ impl MapGenerator {
                     self.map.features[idx] = match self.map.tiles[idx] {
                         Biomes::Beach => Some(Features::CoconutTree),
                         Biomes::Scorched => continue,
-                        Biomes::Bare => Some(Features::Stone),
+                        Biomes::Stone => Some(Features::StoneWall),
                         Biomes::Snow => continue,
                         Biomes::Taiga | Biomes::Tundra => continue,
                         Biomes::TemperateDesert | Biomes::SubtropicalDesert => Some(Features::Cactus),
                         Biomes::Shrubland | Biomes::Grassland => {
                             if max > 0.8 {
-                                Some(Features::Bush)
+                                Some(Features::BerryBush)
                             } else {
                                 Some(Features::Rocks)
                             }
@@ -180,7 +180,7 @@ impl MapGenerator {
                                 Some(Features::AppleTree)
                             }
                         }
-                        Biomes::None | Biomes::Ocean => continue,
+                        Biomes::Empty | Biomes::Ocean => continue,
                     };
                 }
             }
@@ -197,7 +197,7 @@ impl MapGenerator {
         // these thresholds will need tuning to match your generator
 
         if e > 0.6 {
-            return Biomes::Bare;
+            return Biomes::Stone;
         }
 
         if e > 0.5 {

@@ -70,7 +70,7 @@ pub struct Map {
 impl Map {
     pub fn new(height: u32, width: u32) -> Self {
         Self {
-            tiles: vec![Biomes::None; (height * width).try_into().unwrap()],
+            tiles: vec![Biomes::Empty; (height * width).try_into().unwrap()],
             features: vec![None; (height * width).try_into().unwrap()],
             height,
             width,

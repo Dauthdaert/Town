@@ -1,0 +1,4 @@
+(
+	name: "Wall",
+	tile: Standard("features/wall.png")
+)

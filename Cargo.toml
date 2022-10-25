@@ -43,7 +43,9 @@ default = [
     "bevy_asset_loader/progress_tracking_stageless",
     "iyes_loopless/app",
     "iyes_loopless/states",
-    "iyes_loopless/bevy-compat"
+    "iyes_loopless/bevy-compat",
+    "bevy_tileset/variants",
+    "bevy_tileset/auto-tile"
 ]
 
 dev = [
@@ -56,6 +58,7 @@ iyes_loopless = { version = "0.8.*", default-features = false }
 iyes_progress = "0.5.*"
 bevy_kira_audio = "0.12.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
+bevy_tileset = { version = "0.5.0", default-features = false }
 leafwing-input-manager = "0.6.*"
 bevy-inspector-egui = "0.13.*"
 bevy_turborand = "0.3.*"
