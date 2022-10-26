@@ -11,6 +11,7 @@ pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 16.0, y: 16.0 };
 pub const MAP_HEIGHT: u32 = 800;
 pub const MAP_WIDTH: u32 = 800;
 
+mod auto_tiles;
 mod biomes;
 pub mod components;
 mod display;
@@ -24,6 +25,8 @@ pub use biomes::Biomes;
 pub use display::FeatureQuery;
 pub use features::Features;
 pub use layers::*;
+
+use self::auto_tiles::AutoTilePlugin;
 
 #[derive(AssetCollection)]
 pub struct TilemapAssets {
@@ -42,6 +45,7 @@ pub struct MapGenPlugin;
 impl Plugin for MapGenPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(TilesetPlugin::default());
+        app.add_plugin(AutoTilePlugin::<FeatureLayer>::default());
 
         app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::GameObjectSpawning))
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
