@@ -203,6 +203,8 @@ impl<'w, 's> FeatureQuery<'w, 's> {
             self.commands
                 .entity(feature)
                 .insert(AutoTileId { group_id, tileset_id });
+        } else {
+            self.commands.entity(feature).remove::<AutoTileId>();
         }
 
         let (_, mut entity_texture) = self
