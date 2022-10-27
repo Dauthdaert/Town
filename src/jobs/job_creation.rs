@@ -5,7 +5,7 @@ use leafwing_input_manager::prelude::ActionState;
 
 use crate::{
     jobs::{job_queue::Job, Jobs},
-    map_gen::{components::Choppable, map::world_xy_tile_xy, FeatureLayer},
+    map::{components::Choppable, world_xy_tile_xy, FeatureLayer},
 };
 
 use super::{job_queue::*, JobCreationControls, JobCreationMenuManager, JobSelectionType};

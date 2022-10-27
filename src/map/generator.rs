@@ -1,12 +1,7 @@
 use futures_lite::future;
 use iyes_progress::ProgressCounter;
 
-use super::{
-    biomes::Biomes,
-    features::Features,
-    map::{Map, MapPathfinding},
-    MAP_HEIGHT, MAP_WIDTH,
-};
+use super::{biomes::Biomes, features::Features, Map, MapPathfinding, MAP_HEIGHT, MAP_WIDTH};
 use bevy::{
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
@@ -61,7 +56,7 @@ impl MapGenerator {
         MapGenerator {
             elevation_seed: e_seed,
             moisture_seed: m_seed,
-            map: super::map::Map::new(height, width),
+            map: Map::new(height, width),
         }
     }
 

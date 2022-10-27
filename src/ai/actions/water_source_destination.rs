@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::TilePos;
 use big_brain::prelude::*;
 
-use crate::map_gen::components::WaterSource;
+use crate::map::components::WaterSource;
 
 use super::components::Destination;
 

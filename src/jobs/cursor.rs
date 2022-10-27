@@ -1,10 +1,7 @@
 use bevy::{math::Vec3Swizzles, prelude::*, sprite::Anchor};
 use bevy_mouse_tracking_plugin::MousePosWorld;
 
-use crate::map_gen::{
-    map::{tile_xy_world_xy, world_xy_tile_xy},
-    TILE_SIZE,
-};
+use crate::map::{tile_xy_world_xy, world_xy_tile_xy, TILE_SIZE};
 
 use super::{job_creation::SelectionStart, JobCreationMenuAssets};
 

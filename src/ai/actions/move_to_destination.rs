@@ -5,10 +5,7 @@ use hierarchical_pathfinding::{internals::AbstractPath, prelude::Neighborhood};
 
 use crate::{
     ai::characteristics::Speed,
-    map_gen::{
-        map::{is_neighbor, tile_xy_world_xy, world_xy_tile_xy, Map, MapPathfinding},
-        neighborhood::EuclideanNeighborhood,
-    },
+    map::{is_neighbor, neighborhood::EuclideanNeighborhood, tile_xy_world_xy, world_xy_tile_xy, Map, MapPathfinding},
 };
 
 use super::components::Destination;

@@ -4,11 +4,7 @@ use bevy_turborand::{rng::Rng, DelegatedRng, RngComponent};
 use big_brain::prelude::*;
 use if_chain::if_chain;
 
-use crate::map_gen::{
-    components::Obstacle,
-    map::{tile_xy_world_xy, Map},
-    TileLayerObject, TILE_SIZE,
-};
+use crate::map::{components::Obstacle, tile_xy_world_xy, Map, TileLayerObject, TILE_SIZE};
 
 use super::components::Destination;
 

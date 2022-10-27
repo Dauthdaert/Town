@@ -9,7 +9,7 @@ pub mod job_queue;
 
 use job_queue::*;
 
-use crate::{cleanup_entity_by_component, cleanup_resource, map_gen::Features, states::GameStates};
+use crate::{cleanup_entity_by_component, cleanup_resource, map::Features, states::GameStates};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Jobs {
