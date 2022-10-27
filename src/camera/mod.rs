@@ -7,7 +7,7 @@ mod movement;
 use movement::CameraMovement;
 
 use crate::{
-    map_gen::{MAP_HEIGHT, MAP_WIDTH},
+    map::{MAP_HEIGHT, MAP_WIDTH},
     states::GameStates,
 };
 
@@ -30,7 +30,7 @@ impl Plugin for CameraPlugin {
 }
 
 fn setup_camera(mut commands: Commands) {
-    let offset = crate::map_gen::map::tile_xy_world_xy(MAP_WIDTH / 2, MAP_HEIGHT / 2);
+    let offset = crate::map::tile_xy_world_xy(MAP_WIDTH / 2, MAP_HEIGHT / 2);
     commands
         .spawn_bundle(Camera2dBundle {
             transform: Transform::from_xyz(offset.x, offset.y, 1000.0)

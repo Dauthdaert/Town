@@ -4,7 +4,7 @@ use big_brain::prelude::*;
 
 use crate::{
     ai::characteristics::thirst::Thirst,
-    map_gen::{components::WaterSource, map::world_xy_tile_xy},
+    map::{components::WaterSource, is_neighbor, world_xy_tile_xy},
 };
 
 #[derive(Component, Clone, Copy, Debug)]
@@ -29,7 +29,7 @@ pub fn drink(
                 let water_source_tile =
                     super::shared_drinking::find_closest_water_source(&water_sources, actor_transform);
                 let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
-                if crate::map_gen::map::is_neighbor(&actor_tile, &water_source_tile) {
+                if is_neighbor(&actor_tile, &water_source_tile) {
                     actor_thirst.drink_progress += drink.per_second * time.delta_seconds();
 
                     if actor_thirst.drink_progress > actor_thirst.thirst {

@@ -5,7 +5,7 @@ use iyes_progress::Progress;
 
 use crate::{
     animation::{AnimationTimer, SpriteAssets},
-    map_gen::{map::Map, TILE_SIZE},
+    map::{Map, TILE_SIZE},
     SIMULATION_SPEED,
 };
 
@@ -30,7 +30,7 @@ pub fn spawn_ai(
     mut next_ai_id: Local<u32>,
 ) -> Progress {
     for i in *next_ai_id..u32::min(*next_ai_id + 100, NUM_AI) {
-        let pos_offset = crate::map_gen::map::tile_xy_world_xy(map.width / 2, map.height / 2);
+        let pos_offset = crate::map::tile_xy_world_xy(map.width / 2, map.height / 2);
         commands
             .spawn_bundle(SpriteSheetBundle {
                 sprite: TextureAtlasSprite::new(0),

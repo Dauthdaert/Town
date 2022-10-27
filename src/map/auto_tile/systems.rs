@@ -1,65 +1,15 @@
-use std::marker::PhantomData;
-
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
-use bevy_tileset::{
-    auto::{AutoTile, AutoTileId, AutoTileRequest, AutoTilemap, AutoTiler},
-    prelude::*,
-    tileset::coords::TileCoords,
+use bevy_tileset::{auto::*, prelude::*};
+
+use crate::map::Layer;
+
+use super::{
+    events::RemoveAutoTileEvent,
+    tile::{TileCoord, TileInfo},
 };
 
-use super::Layer;
-
-pub struct RemoveAutoTileEvent {
-    pub entity: Entity,
-    pub pos: TilePos,
-    pub auto_id: AutoTileId,
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-struct TileCoord(TilePos);
-
-impl TileCoords for TileCoord {
-    fn pos(&self) -> IVec2 {
-        let pos: UVec2 = self.0.into();
-        pos.as_ivec2()
-    }
-}
-
-#[derive(Clone, Copy)]
-struct TileInfo {
-    pub pos: TileCoord,
-    pub entity: Entity,
-    pub auto_tile: AutoTileId,
-}
-
-impl TileInfo {
-    fn new(entity: Entity, pos: &TilePos, auto_tile: &AutoTileId) -> Self {
-        Self {
-            pos: TileCoord(*pos),
-            entity,
-            auto_tile: *auto_tile,
-        }
-    }
-}
-
-impl AutoTile for TileInfo {
-    type Coords = TileCoord;
-
-    fn coords(&self) -> Self::Coords {
-        self.pos
-    }
-
-    fn auto_id(&self) -> AutoTileId {
-        self.auto_tile
-    }
-
-    fn can_match(&self, other: &Self) -> bool {
-        self.auto_tile == other.auto_tile
-    }
-}
-
-trait TileQuery {
+pub trait TileQuery {
     fn find_tile(&self, entity: Entity) -> Option<TileInfo>;
     fn count(&self) -> usize;
 }
@@ -108,36 +58,7 @@ impl<'a> AutoTilemap for TilemapCache<'a> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, StageLabel)]
-struct AutoTileRemoveStage;
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, StageLabel)]
-struct AutoTileAddUpdateStage;
-
-pub struct AutoTilePlugin<T: Layer + Component> {
-    _phantom: PhantomData<T>,
-}
-
-impl<T: Layer + Component> Default for AutoTilePlugin<T> {
-    fn default() -> Self {
-        Self {
-            _phantom: PhantomData::default(),
-        }
-    }
-}
-
-impl<T: Layer + Component> Plugin for AutoTilePlugin<T> {
-    fn build(&self, app: &mut App) {
-        app.add_stage_before(CoreStage::PostUpdate, AutoTileAddUpdateStage, SystemStage::parallel());
-        app.add_stage_before(AutoTileAddUpdateStage, AutoTileRemoveStage, SystemStage::parallel());
-
-        app.add_event::<RemoveAutoTileEvent>()
-            .add_system_to_stage(AutoTileRemoveStage, on_remove_auto_tile::<T>)
-            .add_system_to_stage(AutoTileAddUpdateStage, on_change_auto_tile::<T>);
-    }
-}
-
-fn on_change_auto_tile<T: Layer + Component>(
+pub fn on_change_auto_tile<T: Layer + Component>(
     mut commands: Commands,
     changed_tiles: Query<(Entity, &TilePos, &AutoTileId), Changed<AutoTileId>>,
     all_tiles: Query<(Entity, &TilePos, &AutoTileId)>,
@@ -170,7 +91,7 @@ fn on_change_auto_tile<T: Layer + Component>(
     apply_requests(&requests, &tilesets, &mut working_tiles, &mut commands);
 }
 
-fn on_remove_auto_tile<T: Layer + Component>(
+pub fn on_remove_auto_tile<T: Layer + Component>(
     mut commands: Commands,
     mut events: EventReader<RemoveAutoTileEvent>,
     all_tiles: Query<(Entity, &TilePos, &AutoTileId)>,

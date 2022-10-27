@@ -2,10 +2,9 @@ use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 use big_brain::prelude::*;
 
-use crate::map_gen::{
+use crate::map::{
     components::{Choppable, Growing},
-    map::{world_xy_tile_xy, Map, MapPathfinding},
-    FeatureQuery, Features,
+    is_neighbor, world_xy_tile_xy, FeatureQuery, Features, Map, MapPathfinding,
 };
 
 use super::components::HasJob;
@@ -32,7 +31,7 @@ pub fn do_job(
                 let (actor_transform, mut actor_job) =
                     actors.get_mut(*actor).expect("Actor should have a position and job.");
                 let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
-                if crate::map_gen::map::is_neighbor(&actor_tile, &actor_job.job.position) {
+                if is_neighbor(&actor_tile, &actor_job.job.position) {
                     actor_job.progress += actor_job.job.job_type.speed() * time.delta_seconds();
 
                     if actor_job.progress >= 100.0 {

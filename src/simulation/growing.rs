@@ -1,10 +1,9 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 
-use crate::map_gen::{
+use crate::map::{
     components::{Choppable, Growing},
-    map::Map,
-    FeatureQuery,
+    FeatureQuery, Features, Map,
 };
 
 pub fn grow(
@@ -20,8 +19,8 @@ pub fn grow(
             let idx = map.tile_xy_idx(tile_pos.x, tile_pos.y);
             let current_feature = map.features[idx].expect("There should be a feature at growing location.");
             let next_feature = match current_feature {
-                crate::map_gen::Features::TreeStump => crate::map_gen::Features::Tree,
-                crate::map_gen::Features::CoconutTreeStump => crate::map_gen::Features::CoconutTree,
+                Features::TreeStump => Features::Tree,
+                Features::CoconutTreeStump => Features::CoconutTree,
                 _ => unreachable!(),
             };
 

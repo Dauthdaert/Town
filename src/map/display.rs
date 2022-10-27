@@ -6,7 +6,7 @@ use bevy_ecs_tilemap::prelude::*;
 use bevy_tileset::{auto::AutoTileId, prelude::*};
 use iyes_progress::Progress;
 
-use super::{map::Map, FeatureLayer, FeatureLayerObject, Features, Layer, TileLayer, TileLayerObject, TILE_SIZE};
+use super::{FeatureLayer, FeatureLayerObject, Features, Layer, Map, TileLayer, TileLayerObject, TILE_SIZE};
 
 pub fn spawn_tiles(
     mut commands: Commands,

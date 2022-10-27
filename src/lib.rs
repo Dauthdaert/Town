@@ -21,7 +21,7 @@ mod ai;
 mod animation;
 mod camera;
 pub mod jobs;
-mod map_gen;
+mod map;
 mod simulation;
 pub mod states;
 
@@ -64,7 +64,7 @@ pub fn app() -> App {
         .add_loading_state(
             LoadingState::new(GameStates::Splash)
                 .continue_to_state(GameStates::MapGeneration)
-                .with_collection::<map_gen::TilemapAssets>()
+                .with_collection::<map::TilemapAssets>()
                 .with_collection::<animation::SpriteAssets>()
                 .with_collection::<jobs::JobCreationMenuAssets>(),
         )
@@ -74,7 +74,7 @@ pub fn app() -> App {
 
     //Add custom plugins
     app.add_plugin(camera::CameraPlugin)
-        .add_plugin(map_gen::MapGenPlugin)
+        .add_plugin(map::MapGenPlugin)
         .add_plugin(jobs::JobsPlugin)
         .add_plugin(ai::AIPlugin)
         .add_plugin(simulation::SimulationPlugin)

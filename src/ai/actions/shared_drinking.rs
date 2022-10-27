@@ -1,7 +1,7 @@
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::tiles::TilePos;
 
-use crate::map_gen::{components::WaterSource, map::tile_xy_world_xy};
+use crate::map::{components::WaterSource, tile_xy_world_xy};
 
 /// A utility function that finds the closest water source to the actor.
 pub fn find_closest_water_source(waters: &Query<&TilePos, With<WaterSource>>, actor_position: &Transform) -> TilePos {
