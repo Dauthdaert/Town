@@ -44,7 +44,7 @@ pub struct MapGenPlugin;
 impl Plugin for MapGenPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(TilesetPlugin::default())
-            .add_plugin(auto_tile::AutoTilePlugin::<FeatureLayer>::default());
+            .add_plugin(auto_tile::AutoTilePlugin);
 
         app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::GameObjectSpawning))
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
