@@ -7,6 +7,7 @@ mod cursor;
 mod job_creation;
 pub mod job_queue;
 
+pub use job_creation::SelectionStart;
 use job_queue::*;
 
 use crate::{cleanup_entity_by_component, cleanup_resource, map::Features, states::GameStates};
@@ -27,13 +28,10 @@ impl Jobs {
 }
 
 #[derive(Clone, Copy, Debug, Deref)]
-pub struct JobSelectionType(Jobs);
+pub struct JobSelectionType(pub Jobs);
 
 #[derive(Actionlike, Clone, Debug, Copy, PartialEq, Eq)]
 pub enum JobCreationControls {
-    Chop,
-    BuildWall,
-    BuildFloor,
     Select,
     Exit,
 }
@@ -49,14 +47,8 @@ pub struct JobsPlugin;
 impl Plugin for JobsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<JobQueue>()
-	     .add_plugin(InputManagerPlugin::<JobCreationControls>::default());
-        app.add_system_set(
-            ConditionSet::new()
-                .run_in_state(GameStates::InGame)
-                .with_system(handle_job_enter_hotkeys)
-                .into(),
-        );
-            app.add_enter_system(GameStates::InGame, setup_job_manager);
+            .add_plugin(InputManagerPlugin::<JobCreationControls>::default())
+            .add_enter_system(GameStates::InGame, setup_job_manager);
 
         app.add_system_set(
             ConditionSet::new()
@@ -78,38 +70,18 @@ impl Plugin for JobsPlugin {
 #[derive(Component, Clone, Copy, Debug)]
 pub struct JobCreationMenuManager;
 
-fn setup_job_manager(mut commands: Commands) {
-    // TODO!(2, Wayan, 12): Job creation selection should be a menu
-    commands
-        .spawn_bundle(InputManagerBundle::<JobCreationControls> {
-            action_state: ActionState::default(),
-            input_map: InputMap::default()
-                .insert(KeyCode::C, JobCreationControls::Chop)
-                .insert(KeyCode::W, JobCreationControls::BuildWall)
-                .insert(KeyCode::F, JobCreationControls::BuildFloor)
-                .insert(KeyCode::Return, JobCreationControls::Select)
-                .insert(MouseButton::Left, JobCreationControls::Select)
-                .insert(KeyCode::Escape, JobCreationControls::Exit)
-                .build(),
-        })
-        .insert_bundle((JobCreationMenuManager, Name::from("Job Creation Menu Manager")));
-}
-
-fn handle_job_enter_hotkeys(
-    mut commands: Commands,
-    query: Query<&ActionState<JobCreationControls>, With<JobCreationMenuManager>>,
-) {
-    let job_creation_menu = query.single();
-
-    if job_creation_menu.just_pressed(JobCreationControls::Chop) {
-        commands.insert_resource(NextState(GameStates::InJobSelection));
-        commands.insert_resource(JobSelectionType(Jobs::Chop));
-    } else if job_creation_menu.just_pressed(JobCreationControls::BuildWall) {
-        commands.insert_resource(NextState(GameStates::InJobSelection));
-        commands.insert_resource(JobSelectionType(Jobs::Build(Features::Wall)));
-    } else if job_creation_menu.just_pressed(JobCreationControls::BuildFloor) {
-        commands.insert_resource(NextState(GameStates::InJobSelection));
-        commands.insert_resource(JobSelectionType(Jobs::Build(Features::Floor)));
+fn setup_job_manager(mut commands: Commands, manager_query: Query<Entity, With<JobCreationMenuManager>>) {
+    if manager_query.is_empty() {
+        commands
+            .spawn_bundle(InputManagerBundle::<JobCreationControls> {
+                action_state: ActionState::default(),
+                input_map: InputMap::default()
+                    .insert(KeyCode::Return, JobCreationControls::Select)
+                    .insert(MouseButton::Left, JobCreationControls::Select)
+                    .insert(KeyCode::Escape, JobCreationControls::Exit)
+                    .build(),
+            })
+            .insert_bundle((JobCreationMenuManager, Name::from("Job Creation Menu Manager")));
     }
 }
 

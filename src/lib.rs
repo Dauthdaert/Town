@@ -20,6 +20,7 @@ pub const SIMULATION_SPEED: f32 = 5.0;
 mod ai;
 mod animation;
 mod camera;
+mod gui;
 pub mod jobs;
 mod map;
 mod simulation;
@@ -66,7 +67,8 @@ pub fn app() -> App {
                 .continue_to_state(GameStates::MapGeneration)
                 .with_collection::<map::TilemapAssets>()
                 .with_collection::<animation::SpriteAssets>()
-                .with_collection::<jobs::JobCreationMenuAssets>(),
+                .with_collection::<jobs::JobCreationMenuAssets>()
+                .with_collection::<gui::UiAssets>(),
         )
         .add_plugin(ProgressPlugin::new(GameStates::Splash));
 
@@ -78,7 +80,8 @@ pub fn app() -> App {
         .add_plugin(jobs::JobsPlugin)
         .add_plugin(ai::AIPlugin)
         .add_plugin(simulation::SimulationPlugin)
-        .add_plugin(animation::AnimationPlugin);
+        .add_plugin(animation::AnimationPlugin)
+        .add_plugin(gui::GuiPlugin);
 
     app
 }
