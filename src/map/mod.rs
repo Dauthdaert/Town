@@ -8,8 +8,8 @@ use iyes_progress::prelude::*;
 use crate::states::GameStates;
 
 pub const TILE_SIZE: TilemapTileSize = TilemapTileSize { x: 16.0, y: 16.0 };
-pub const MAP_HEIGHT: u32 = 800;
-pub const MAP_WIDTH: u32 = 800;
+pub const MAP_HEIGHT: u32 = 600;
+pub const MAP_WIDTH: u32 = 600;
 
 mod auto_tile;
 mod biomes;
