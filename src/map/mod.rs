@@ -46,7 +46,7 @@ impl Plugin for MapGenPlugin {
         app.add_plugin(TilesetPlugin::default())
             .add_plugin(auto_tile::AutoTilePlugin);
 
-        app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::GameObjectSpawning))
+        app.add_plugin(ProgressPlugin::new(GameStates::MapGeneration).continue_to(GameStates::InGamePrepare))
             .add_enter_system(GameStates::MapGeneration, generator::start_generate_map)
             .add_system_set(
                 ConditionSet::new()
@@ -57,7 +57,7 @@ impl Plugin for MapGenPlugin {
 
         app.add_system_set(
             ConditionSet::new()
-                .run_in_state(GameStates::GameObjectSpawning)
+                .run_in_state(GameStates::InGamePrepare)
                 .with_system(display::spawn_tiles.track_progress())
                 .with_system(display::spawn_features.track_progress())
                 .into(),

@@ -19,7 +19,7 @@ impl Plugin for AIPlugin {
 
         app.add_system_set(
             ConditionSet::new()
-                .run_in_state(GameStates::GameObjectSpawning)
+                .run_in_state(GameStates::InGamePrepare)
                 .with_system(spawner::spawn_ai.track_progress())
                 .into(),
         );

@@ -2,7 +2,7 @@
 pub enum GameStates {
     Splash,
     MapGeneration,
-    GameObjectSpawning,
+    InGamePrepare,
     InGame,
     InJobSelection,
 }

@@ -49,15 +49,14 @@ pub struct JobsPlugin;
 impl Plugin for JobsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<JobQueue>()
-            .add_plugin(InputManagerPlugin::<JobCreationControls>::default())
-            .add_enter_system(GameStates::GameObjectSpawning, setup_job_manager);
-
+	     .add_plugin(InputManagerPlugin::<JobCreationControls>::default());
         app.add_system_set(
             ConditionSet::new()
                 .run_in_state(GameStates::InGame)
                 .with_system(handle_job_enter_hotkeys)
                 .into(),
         );
+            app.add_enter_system(GameStates::InGame, setup_job_manager);
 
         app.add_system_set(
             ConditionSet::new()

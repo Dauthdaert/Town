@@ -70,7 +70,7 @@ pub fn app() -> App {
         )
         .add_plugin(ProgressPlugin::new(GameStates::Splash));
 
-    app.add_plugin(ProgressPlugin::new(GameStates::GameObjectSpawning).continue_to(GameStates::InGame));
+    app.add_plugin(ProgressPlugin::new(GameStates::InGamePrepare).continue_to(GameStates::InGame));
 
     //Add custom plugins
     app.add_plugin(camera::CameraPlugin)
@@ -93,5 +93,23 @@ fn cleanup_entity_by_component<T: bevy::ecs::component::Component>(
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
+    }
+}
+
+#[macro_export]
+macro_rules! condition_set_in_states {
+    ($(|)? $( $pattern:pat_param )|+) => {
+        iyes_loopless::prelude::ConditionSet::new()
+            .run_if(move |res: Option<bevy::prelude::Res<iyes_loopless::prelude::CurrentState<$crate::states::GameStates>>>| {
+                if_chain::if_chain! {
+                    if let Some(res) = res;
+                    let res = res.0;
+                    then {
+                        matches!(res, $( $pattern )|+)
+                    } else {
+                        false
+                    }
+                }
+            })
     }
 }
