@@ -3,12 +3,15 @@ use bevy_asset_loader::prelude::*;
 use bevy_ui_navigation::prelude::*;
 
 mod in_game;
+mod splash;
 mod systems;
 
 #[derive(AssetCollection)]
 pub struct UiAssets {
     #[asset(path = "fonts/FiraMono-Medium.ttf")]
     pub font_medium: Handle<Font>,
+    #[asset(path = "splash.png")]
+    pub splash_bg: Handle<Image>,
 }
 
 impl UiAssets {
@@ -35,6 +38,9 @@ impl Plugin for GuiPlugin {
         app.add_plugins(DefaultNavigationPlugins)
             .add_system(systems::button_system.after(NavRequestSystem));
 
-        app.add_plugin(in_game::InGameGuiPlugin);
+        app.add_plugin(in_game::InGameGuiPlugin)
+            .add_plugin(splash::SplashGuiPlugin);
+
+        //TODO!(5, Wayan, 0) : Setup main menu using infinite scrolling map as background.
     }
 }
