@@ -1,6 +1,7 @@
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::tiles::{TilePos, TileStorage};
 use bevy_mouse_tracking_plugin::MousePosWorld;
+use iyes_loopless::state::NextState;
 use leafwing_input_manager::prelude::ActionState;
 
 use crate::{
@@ -53,6 +54,7 @@ pub fn handle_job_creation_hotkeys(
                 }
             }
             commands.remove_resource::<SelectionStart>();
+            commands.insert_resource(NextState(crate::states::GameStates::InGame));
         } else {
             commands.insert_resource(SelectionStart(world_tile));
         }
