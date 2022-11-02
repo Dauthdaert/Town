@@ -21,14 +21,21 @@ pub enum Jobs {
 impl Jobs {
     pub fn speed(&self) -> f32 {
         match self {
-            Jobs::Chop => 10.0,
-            Jobs::Build(_) => 50.0,
+            Jobs::Chop => 20.0,
+            Jobs::Build(_) => 30.0,
         }
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum JobCreation {
+    Chop,
+    Build(Features),
+    BuildRoom,
+}
+
 #[derive(Clone, Copy, Debug, Deref)]
-pub struct JobSelectionType(pub Jobs);
+pub struct JobSelectionType(pub JobCreation);
 
 #[derive(Actionlike, Clone, Debug, Copy, PartialEq, Eq)]
 pub enum JobCreationControls {

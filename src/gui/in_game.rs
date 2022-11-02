@@ -6,7 +6,7 @@ use iyes_loopless::prelude::*;
 
 use crate::{
     condition_set_in_states,
-    jobs::{JobSelectionType, Jobs, SelectionStart},
+    jobs::{JobCreation, JobSelectionType, SelectionStart},
     states::GameStates,
 };
 
@@ -21,6 +21,7 @@ enum InGameUiElem {
     ChopButton,
     BuildWallButton,
     BuildFloorButton,
+    BuildRoomButton,
 }
 
 pub struct InGameGuiPlugin;
@@ -86,6 +87,12 @@ fn setup_in_game_ui(
                         margin: rect!(10 px)
                     }[button; focusable, Name::new("BuildFloorButton"), InGameUiElem::BuildFloorButton](
                         node[text_bundle("Build Floor", 20.0);]
+                    ),
+                    node{
+                        padding: rect!(20 px),
+                        margin: rect!(10 px)
+                    }[button; focusable, Name::new("BuildRoomButton"), InGameUiElem::BuildRoomButton](
+                        node[text_bundle("Build Room", 20.0);]
                     )
                 )
             )
@@ -108,15 +115,19 @@ fn update_in_game_ui(
         match (event_type, elements.get(from)) {
             (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::ChopButton)) => {
                 requested_state_change = Some(GameStates::InJobSelection);
-                commands.insert_resource(JobSelectionType(Jobs::Chop));
+                commands.insert_resource(JobSelectionType(JobCreation::Chop));
             }
             (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::BuildWallButton)) => {
                 requested_state_change = Some(GameStates::InJobSelection);
-                commands.insert_resource(JobSelectionType(Jobs::Build(crate::map::Features::Wall)));
+                commands.insert_resource(JobSelectionType(JobCreation::Build(crate::map::Features::Wall)));
             }
             (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::BuildFloorButton)) => {
                 requested_state_change = Some(GameStates::InJobSelection);
-                commands.insert_resource(JobSelectionType(Jobs::Build(crate::map::Features::Floor)));
+                commands.insert_resource(JobSelectionType(JobCreation::Build(crate::map::Features::Floor)));
+            }
+            (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::BuildRoomButton)) => {
+                requested_state_change = Some(GameStates::InJobSelection);
+                commands.insert_resource(JobSelectionType(JobCreation::BuildRoom));
             }
             (_, Err(err)) => error!("Error in in_game_ui update: {err:?}"),
             _ => {}
