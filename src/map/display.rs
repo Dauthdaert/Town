@@ -163,9 +163,11 @@ pub fn spawn_features(
 pub struct FeatureQuery<'w, 's> {
     commands: Commands<'w, 's>,
     parent_query: Query<'w, 's, Entity, With<FeatureLayer>>,
-    feature_query: Query<'w, 's, (Entity, &'static mut TileTexture), With<FeatureLayerObject>>,
+    texture_query: Query<'w, 's, (Entity, &'static mut TileTexture), With<FeatureLayerObject>>,
+    auto_query: Query<'w, 's, (Entity, &'static AutoTileId), With<FeatureLayerObject>>,
     feature_storage: Query<'w, 's, &'static mut TileStorage, With<FeatureLayer>>,
     tilesets: Tilesets<'w, 's>,
+    remove_tile_events: EventWriter<'w, 's, super::auto_tile::RemoveAutoTileEvent>,
 }
 
 impl<'w, 's> FeatureQuery<'w, 's> {
@@ -208,7 +210,7 @@ impl<'w, 's> FeatureQuery<'w, 's> {
         }
 
         let (_, mut entity_texture) = self
-            .feature_query
+            .texture_query
             .get_mut(feature)
             .expect("Feature entity should exist.");
         entity_texture.0 = match tile_index {
@@ -227,6 +229,25 @@ impl<'w, 's> FeatureQuery<'w, 's> {
                 start as u32
             }
         };
+    }
+
+    pub fn despawn_feature(&mut self, feature_pos: TilePos) {
+        let mut feature_storage = self
+            .feature_storage
+            .get_single_mut()
+            .expect("Feature storage should exist.");
+        if let Some(feature) = feature_storage.get(&feature_pos) {
+            self.commands.entity(feature).despawn_recursive();
+            feature_storage.remove(&feature_pos);
+
+            if let Ok((_feature_entity, feature_auto)) = self.auto_query.get(feature) {
+                self.remove_tile_events.send(super::auto_tile::RemoveAutoTileEvent {
+                    entity: feature,
+                    pos: feature_pos,
+                    auto_id: *feature_auto,
+                });
+            }
+        }
     }
 
     pub fn get_feature(&self, feature_pos: &TilePos) -> Option<Entity> {

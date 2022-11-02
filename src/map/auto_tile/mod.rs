@@ -8,6 +8,8 @@ mod events;
 mod systems;
 mod tile;
 
+pub use events::RemoveAutoTileEvent;
+
 pub struct AutoTilePlugin;
 
 impl Plugin for AutoTilePlugin {

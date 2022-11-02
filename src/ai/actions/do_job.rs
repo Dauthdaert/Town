@@ -60,6 +60,12 @@ pub fn do_job(
                                     &mut feature_query,
                                 );
                             }
+                            crate::jobs::Jobs::Destroy => do_destroy(
+                                &actor_job.job.position,
+                                &mut map,
+                                &mut map_pathfinding,
+                                &mut feature_query,
+                            ),
                         }
                         commands.entity(*actor).remove::<HasJob>();
                         *action_state = ActionState::Success;
@@ -108,4 +114,16 @@ fn do_build(
     map.features[idx] = Some(feature);
     map_pathfinding.announce_tile_changed(map, build_pos);
     feature_query.spawn_feature(*build_pos, feature);
+}
+
+fn do_destroy(
+    build_pos: &TilePos,
+    map: &mut Map,
+    map_pathfinding: &mut MapPathfinding,
+    feature_query: &mut FeatureQuery,
+) {
+    let idx = map.tile_xy_idx(build_pos.x, build_pos.y);
+    map.features[idx] = None;
+    map_pathfinding.announce_tile_changed(map, build_pos);
+    feature_query.despawn_feature(*build_pos);
 }

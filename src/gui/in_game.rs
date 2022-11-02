@@ -19,6 +19,7 @@ struct InGameUiRoot;
 #[derive(Component, Clone, Copy)]
 enum InGameUiElem {
     ChopButton,
+    DestroyButton,
     BuildWallButton,
     BuildFloorButton,
     BuildRoomButton,
@@ -79,6 +80,12 @@ fn setup_in_game_ui(
                     node{
                         padding: rect!(20 px),
                         margin: rect!(10 px)
+                    }[button; focusable, Name::new("DestroyButton"), InGameUiElem::DestroyButton](
+                        node[text_bundle("Destroy", 20.0);]
+                    ),
+                    node{
+                        padding: rect!(20 px),
+                        margin: rect!(10 px)
                     }[button; focusable, Name::new("BuildWallButton"), InGameUiElem::BuildWallButton](
                         node[text_bundle("Build Wall", 20.0);]
                     ),
@@ -116,6 +123,10 @@ fn update_in_game_ui(
             (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::ChopButton)) => {
                 requested_state_change = Some(GameStates::InJobSelection);
                 commands.insert_resource(JobSelectionType(JobCreation::Chop));
+            }
+            (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::DestroyButton)) => {
+                requested_state_change = Some(GameStates::InJobSelection);
+                commands.insert_resource(JobSelectionType(JobCreation::Destroy));
             }
             (NavEvent::NoChanges { request: Action, .. }, Ok(InGameUiElem::BuildWallButton)) => {
                 requested_state_change = Some(GameStates::InJobSelection);

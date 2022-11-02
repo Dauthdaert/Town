@@ -15,6 +15,7 @@ use crate::{cleanup_entity_by_component, cleanup_resource, map::Features, states
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Jobs {
     Chop,
+    Destroy,
     Build(Features),
 }
 
@@ -23,6 +24,7 @@ impl Jobs {
         match self {
             Jobs::Chop => 20.0,
             Jobs::Build(_) => 30.0,
+            Jobs::Destroy => 10.0,
         }
     }
 }
@@ -30,6 +32,7 @@ impl Jobs {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum JobCreation {
     Chop,
+    Destroy,
     Build(Features),
     BuildRoom,
 }
