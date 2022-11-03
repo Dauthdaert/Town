@@ -65,7 +65,7 @@ pub fn on_change_auto_tile<T: Layer + Component>(
     mut working_tiles: Query<(
         Entity,
         &TilePos,
-        &mut TileTexture,
+        &mut TileTextureIndex,
         &AutoTileId,
         Option<&mut AnimatedTile>,
     )>,
@@ -98,7 +98,7 @@ pub fn on_remove_auto_tile<T: Layer + Component>(
     mut working_tiles: Query<(
         Entity,
         &TilePos,
-        &mut TileTexture,
+        &mut TileTextureIndex,
         &AutoTileId,
         Option<&mut AnimatedTile>,
     )>,
@@ -132,7 +132,7 @@ fn apply_requests(
     query: &mut Query<(
         Entity,
         &TilePos,
-        &mut TileTexture,
+        &mut TileTextureIndex,
         &AutoTileId,
         Option<&mut AnimatedTile>,
     )>,

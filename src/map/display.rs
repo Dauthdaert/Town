@@ -37,8 +37,8 @@ pub fn spawn_tiles(
                     let (tile_index, tile_data) = tileset
                         .select_tile(tile_biome.tile_name())
                         .unwrap_or_else(|| panic!("Tile {} should exist.", tile_biome.tile_name()));
-                    let texture = match tile_index {
-                        TileIndex::Standard(index) => TileTexture(index as u32),
+                    let texture_index = match tile_index {
+                        TileIndex::Standard(index) => TileTextureIndex(index as u32),
                         TileIndex::Animated(start, end, speed) => {
                             tile_builder.insert(AnimatedTile {
                                 start: start as u32,
@@ -46,7 +46,7 @@ pub fn spawn_tiles(
                                 speed,
                             });
 
-                            TileTexture(start as u32)
+                            TileTextureIndex(start as u32)
                         }
                     };
 
@@ -61,7 +61,7 @@ pub fn spawn_tiles(
                     tile_builder.insert_bundle(TileBundle {
                         position: tile_pos,
                         tilemap_id,
-                        texture,
+                        texture_index,
                         ..default()
                     });
 
@@ -163,7 +163,7 @@ pub fn spawn_features(
 pub struct FeatureQuery<'w, 's> {
     commands: Commands<'w, 's>,
     parent_query: Query<'w, 's, Entity, With<FeatureLayer>>,
-    texture_query: Query<'w, 's, (Entity, &'static mut TileTexture), With<FeatureLayerObject>>,
+    texture_query: Query<'w, 's, (Entity, &'static mut TileTextureIndex), With<FeatureLayerObject>>,
     auto_query: Query<'w, 's, (Entity, &'static AutoTileId), With<FeatureLayerObject>>,
     feature_storage: Query<'w, 's, &'static mut TileStorage, With<FeatureLayer>>,
     tilesets: Tilesets<'w, 's>,
@@ -272,8 +272,8 @@ fn fill_feature(
     feature_pos: TilePos,
 ) -> Entity {
     let (tile_index, is_auto, group_id, tileset_id) = tile;
-    let texture = match tile_index {
-        TileIndex::Standard(index) => TileTexture(index as u32),
+    let texture_index = match tile_index {
+        TileIndex::Standard(index) => TileTextureIndex(index as u32),
         TileIndex::Animated(start, end, speed) => {
             feature_builder.insert(AnimatedTile {
                 start: start as u32,
@@ -281,7 +281,7 @@ fn fill_feature(
                 speed,
             });
 
-            TileTexture(start as u32)
+            TileTextureIndex(start as u32)
         }
     };
 
@@ -292,7 +292,7 @@ fn fill_feature(
     feature_builder.insert_bundle(TileBundle {
         position: feature_pos,
         tilemap_id: TilemapId(parent),
-        texture,
+        texture_index,
         ..default()
     });
 
