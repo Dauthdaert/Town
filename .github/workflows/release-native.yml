@@ -6,8 +6,7 @@ on:
       - "v*.*.*"
 
 env:
-  RELEASE_NAME: my_game
-  PUBLIC_URL: /bevy-shell-template/
+  RELEASE_NAME: Town
 
 jobs:
   setup:
