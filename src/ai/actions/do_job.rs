@@ -60,7 +60,7 @@ pub fn do_job(
                                     &mut feature_query,
                                 );
                             }
-                            crate::jobs::Jobs::Destroy => do_destroy(
+                            crate::jobs::Jobs::Clear => do_clear(
                                 &actor_job.job.position,
                                 &mut map,
                                 &mut map_pathfinding,
@@ -116,7 +116,7 @@ fn do_build(
     feature_query.spawn_feature(*build_pos, feature);
 }
 
-fn do_destroy(
+fn do_clear(
     build_pos: &TilePos,
     map: &mut Map,
     map_pathfinding: &mut MapPathfinding,

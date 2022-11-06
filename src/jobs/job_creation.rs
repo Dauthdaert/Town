@@ -87,13 +87,13 @@ pub fn handle_job_creation_hotkeys(
                         }
                     }
                 }
-                JobCreation::Destroy => {
+                JobCreation::Clear => {
                     for x in u32::min(selection.x, world_tile.x)..=u32::max(selection.x, world_tile.x) {
                         for y in u32::min(selection.y, world_tile.y)..=u32::max(selection.y, world_tile.y) {
                             let tile_pos = TilePos::new(x, y);
                             let entity = feature_tile_storage.get(&tile_pos);
                             if entity.is_some() {
-                                job_queue.jobs.push_back(Job::new(Jobs::Destroy, tile_pos));
+                                job_queue.jobs.push_back(Job::new(Jobs::Clear, tile_pos));
                             }
                         }
                     }

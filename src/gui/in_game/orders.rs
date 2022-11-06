@@ -64,7 +64,7 @@ pub fn update_orders_menu_ui(
             }
             InGameOrdersUiElem::ClearButton => {
                 requested_state_change = Some(GameStates::InJobSelection);
-                commands.insert_resource(JobSelectionType(JobCreation::Destroy));
+                commands.insert_resource(JobSelectionType(JobCreation::Clear));
             }
         }
     }
