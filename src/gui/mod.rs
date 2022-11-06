@@ -3,6 +3,7 @@ use bevy_asset_loader::prelude::*;
 use bevy_ui_navigation::prelude::*;
 
 mod in_game;
+mod navigation;
 mod splash;
 mod systems;
 
@@ -35,7 +36,8 @@ pub struct GuiPlugin;
 
 impl Plugin for GuiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(DefaultNavigationPlugins)
+        app.add_plugin(NavigationPlugin::new())
+            .add_plugin(navigation::NavigationSystemsPlugin)
             .add_system(systems::button_system.after(NavRequestSystem));
 
         app.add_plugin(in_game::InGameGuiPlugin)
