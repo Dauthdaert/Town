@@ -15,6 +15,7 @@ pub struct InGameOrdersUiRoot;
 #[derive(Component, Clone, Copy)]
 pub enum InGameOrdersUiElem {
     ChopButton,
+    MineButton,
     ClearButton,
 }
 
@@ -22,6 +23,7 @@ impl InGameOrdersUiElem {
     fn name(&self) -> &str {
         match self {
             InGameOrdersUiElem::ChopButton => "ChopButton",
+            InGameOrdersUiElem::MineButton => "MineButton",
             InGameOrdersUiElem::ClearButton => "ClearButton",
         }
     }
@@ -61,6 +63,10 @@ pub fn update_orders_menu_ui(
             InGameOrdersUiElem::ChopButton => {
                 requested_state_change = Some(GameStates::InJobSelection);
                 commands.insert_resource(JobSelectionType(JobCreation::Chop));
+            }
+            InGameOrdersUiElem::MineButton => {
+                requested_state_change = Some(GameStates::InJobSelection);
+                commands.insert_resource(JobSelectionType(JobCreation::Mine));
             }
             InGameOrdersUiElem::ClearButton => {
                 requested_state_change = Some(GameStates::InJobSelection);

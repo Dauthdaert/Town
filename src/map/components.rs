@@ -28,4 +28,4 @@ impl Growing {
 }
 
 #[derive(Component, Clone, Copy, Debug)]
-pub struct Destructable;
+pub struct Mineable;

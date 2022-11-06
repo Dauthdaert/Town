@@ -132,6 +132,11 @@ fn setup_in_game_ui(
                             ),
                             button {
                                 display: Display::None
+                            }[orders::InGameOrdersUiElem::MineButton.to_button();](
+                                node[text_bundle("Mine", 20.0);]
+                            ),
+                            button {
+                                display: Display::None
                             }[orders::InGameOrdersUiElem::ClearButton.to_button();](
                                 node[text_bundle("Clear", 20.0);]
                             )

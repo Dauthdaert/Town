@@ -6,7 +6,10 @@ use leafwing_input_manager::prelude::ActionState;
 
 use crate::{
     jobs::{job_queue::Job, Jobs},
-    map::{components::Choppable, world_xy_tile_xy, FeatureLayer, Features},
+    map::{
+        components::{Choppable, Mineable},
+        world_xy_tile_xy, FeatureLayer, Features,
+    },
 };
 
 use super::{job_queue::*, JobCreation, JobCreationControls, JobCreationMenuManager, JobSelectionType};
@@ -23,6 +26,7 @@ pub fn handle_job_creation_hotkeys(
     mouse_pos: Res<MousePosWorld>,
     feature_tiles_query: Query<&TileStorage, With<FeatureLayer>>,
     choppable_tiles_query: Query<Entity, With<Choppable>>,
+    mineable_tiles_query: Query<Entity, With<Mineable>>,
 ) {
     let job_creation_menu = query.single();
 
@@ -40,6 +44,19 @@ pub fn handle_job_creation_hotkeys(
                             if let Some(entity) = entity {
                                 if choppable_tiles_query.contains(entity) {
                                     job_queue.jobs.push_back(Job::new(Jobs::Chop, tile_pos));
+                                }
+                            }
+                        }
+                    }
+                }
+                JobCreation::Mine => {
+                    for x in u32::min(selection.x, world_tile.x)..=u32::max(selection.x, world_tile.x) {
+                        for y in u32::min(selection.y, world_tile.y)..=u32::max(selection.y, world_tile.y) {
+                            let tile_pos = TilePos::new(x, y);
+                            let entity = feature_tile_storage.get(&tile_pos);
+                            if let Some(entity) = entity {
+                                if mineable_tiles_query.contains(entity) {
+                                    job_queue.jobs.push_back(Job::new(Jobs::Mine, tile_pos));
                                 }
                             }
                         }

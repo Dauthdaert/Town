@@ -304,8 +304,8 @@ fn fill_feature(
         feature_builder.insert(super::components::Choppable);
     }
 
-    if feature.is_destructable() {
-        feature_builder.insert(super::components::Destructable);
+    if feature.is_mineable() {
+        feature_builder.insert(super::components::Mineable);
     }
 
     feature_builder

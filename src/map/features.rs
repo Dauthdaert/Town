@@ -42,10 +42,7 @@ impl Features {
         matches!(self, Features::Tree | Features::CoconutTree | Features::Cactus)
     }
 
-    pub fn is_destructable(&self) -> bool {
-        matches!(
-            self,
-            Features::StoneWall | Features::Rocks | Features::Wall | Features::Floor
-        )
+    pub fn is_mineable(&self) -> bool {
+        matches!(self, Features::StoneWall | Features::Rocks)
     }
 }

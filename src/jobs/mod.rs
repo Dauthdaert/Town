@@ -15,6 +15,7 @@ use crate::{cleanup_entity_by_component, cleanup_resource, map::Features, states
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Jobs {
     Chop,
+    Mine,
     Clear,
     Build(Features),
 }
@@ -23,6 +24,7 @@ impl Jobs {
     pub fn speed(&self) -> f32 {
         match self {
             Jobs::Chop => 20.0,
+            Jobs::Mine => 15.0,
             Jobs::Build(_) => 30.0,
             Jobs::Clear => 10.0,
         }
@@ -32,6 +34,7 @@ impl Jobs {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum JobCreation {
     Chop,
+    Mine,
     Clear,
     Build(Features),
     BuildRoom,

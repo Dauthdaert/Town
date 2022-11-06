@@ -3,7 +3,7 @@ use bevy_ecs_tilemap::prelude::*;
 use big_brain::prelude::*;
 
 use crate::map::{
-    components::{Choppable, Growing},
+    components::{Choppable, Growing, Mineable},
     is_neighbor, world_xy_tile_xy, FeatureQuery, Features, Map, MapPathfinding,
 };
 
@@ -19,7 +19,8 @@ pub fn do_job(
     mut map_pathfinding: ResMut<MapPathfinding>,
     time: Res<Time>,
     mut actors: Query<(&Transform, &mut HasJob)>,
-    trees: Query<Entity, With<Choppable>>,
+    chop_query: Query<Entity, With<Choppable>>,
+    mine_query: Query<Entity, With<Mineable>>,
     mut actions: Query<(&Actor, &mut ActionState, &DoJob)>,
 ) {
     for (Actor(actor), mut action_state, _do_job) in actions.iter_mut() {
@@ -40,12 +41,26 @@ pub fn do_job(
                                 // TODO!(3, Wayan, 0): Have better job duplication logic in an earlier step.
                                 let feature = feature_query.get_feature(&actor_job.job.position);
                                 if let Some(feature_layer) = feature {
-                                    if let Ok(tree) = trees.get(feature_layer) {
+                                    if let Ok(chop_target) = chop_query.get(feature_layer) {
                                         do_chop(
                                             &actor_job.job.position,
                                             &mut map,
-                                            tree,
+                                            chop_target,
                                             &mut commands,
+                                            &mut feature_query,
+                                        );
+                                    }
+                                }
+                            }
+                            crate::jobs::Jobs::Mine => {
+                                // TODO!(3, Wayan, 0): Have better job duplication logic in an earlier step.
+                                let feature = feature_query.get_feature(&actor_job.job.position);
+                                if let Some(feature_layer) = feature {
+                                    if mine_query.get(feature_layer).is_ok() {
+                                        do_mine(
+                                            &actor_job.job.position,
+                                            &mut map,
+                                            &mut map_pathfinding,
                                             &mut feature_query,
                                         );
                                     }
@@ -83,8 +98,14 @@ pub fn do_job(
     }
 }
 
-fn do_chop(tree_pos: &TilePos, map: &mut Map, tree: Entity, commands: &mut Commands, feature_query: &mut FeatureQuery) {
-    let idx = map.tile_xy_idx(tree_pos.x, tree_pos.y);
+fn do_chop(
+    chop_target_pos: &TilePos,
+    map: &mut Map,
+    chop_target: Entity,
+    commands: &mut Commands,
+    feature_query: &mut FeatureQuery,
+) {
+    let idx = map.tile_xy_idx(chop_target_pos.x, chop_target_pos.y);
 
     let current_feature = map.features[idx];
     let next_feature = match current_feature {
@@ -96,11 +117,26 @@ fn do_chop(tree_pos: &TilePos, map: &mut Map, tree: Entity, commands: &mut Comma
 
     map.features[idx] = next_feature;
     if let Some(next_feature) = next_feature {
-        feature_query.change_feature_tile(tree, next_feature);
-        commands.entity(tree).remove::<Choppable>().insert(Growing::new());
+        feature_query.change_feature_tile(chop_target, next_feature);
+        commands
+            .entity(chop_target)
+            .remove::<Choppable>()
+            .insert(Growing::new());
     } else {
-        commands.entity(tree).despawn_recursive();
+        commands.entity(chop_target).despawn_recursive();
     }
+}
+
+fn do_mine(
+    mine_target_pos: &TilePos,
+    map: &mut Map,
+    map_pathfinding: &mut MapPathfinding,
+    feature_query: &mut FeatureQuery,
+) {
+    let idx = map.tile_xy_idx(mine_target_pos.x, mine_target_pos.y);
+    map.features[idx] = None;
+    map_pathfinding.announce_tile_changed(map, mine_target_pos);
+    feature_query.despawn_feature(*mine_target_pos);
 }
 
 fn do_build(
