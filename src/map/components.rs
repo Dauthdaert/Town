@@ -12,6 +12,7 @@ pub struct Obstacle;
 pub struct Choppable;
 
 #[derive(Component, Clone, Copy, Debug)]
+#[component(storage = "SparseSet")]
 pub struct Growing {
     pub speed: f32,
     pub progress: f32,
