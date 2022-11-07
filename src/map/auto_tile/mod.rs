@@ -9,6 +9,7 @@ mod systems;
 mod tile;
 
 pub use events::RemoveAutoTileEvent;
+pub use tile::AutoTileCategory;
 
 pub struct AutoTilePlugin;
 

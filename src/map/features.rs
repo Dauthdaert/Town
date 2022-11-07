@@ -1,3 +1,5 @@
+use super::auto_tile::AutoTileCategory;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Features {
     TreeStump,
@@ -13,6 +15,7 @@ pub enum Features {
     StoneWall,
     Wall,
     Floor,
+    Door,
 }
 
 impl Features {
@@ -31,6 +34,14 @@ impl Features {
             Features::StoneWall => "StoneWall",
             Features::Wall => "Wall",
             Features::Floor => "Floor",
+            Features::Door => "Door",
+        }
+    }
+
+    pub fn auto_tile_category(&self) -> AutoTileCategory {
+        match self {
+            Features::Wall | Features::Door => AutoTileCategory::Wall,
+            _ => AutoTileCategory::None,
         }
     }
 

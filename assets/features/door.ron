@@ -1,0 +1,43 @@
+#![enable(implicit_some)]
+
+(
+    name: "Door",
+    tile: Auto([
+        (
+            // Horizontal
+            rule: (
+                n: false,
+                w: true,
+                e: true,
+                s: false,
+            ),
+            variants: [
+                (
+                    tile: Standard("features/door/door-horizontal.png")
+                )
+            ]
+        ),
+        (
+            // Vertical
+            rule: (
+                n: true,
+                w: false,
+                e: false,
+                s: true,
+            ),
+            variants: [
+                (
+                    tile: Standard("features/door/door-vertical.png")
+                )
+            ]
+        ),
+        (
+            // Default
+            variants: [
+                (
+                    tile: Standard("features/door/door-horizontal.png")
+                )
+            ]
+        )
+    ])
+)

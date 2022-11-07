@@ -6,7 +6,7 @@ use crate::map::Layer;
 
 use super::{
     events::RemoveAutoTileEvent,
-    tile::{TileCoord, TileInfo},
+    tile::{AutoTileCategory, TileCoord, TileInfo},
 };
 
 pub trait TileQuery {
@@ -14,10 +14,10 @@ pub trait TileQuery {
     fn count(&self) -> usize;
 }
 
-impl<'w, 's> TileQuery for Query<'w, 's, (Entity, &TilePos, &AutoTileId)> {
+impl<'w, 's> TileQuery for Query<'w, 's, (Entity, &TilePos, &AutoTileId, &AutoTileCategory)> {
     fn find_tile(&self, entity: Entity) -> Option<TileInfo> {
-        if let Ok((entity, pos, auto_tile)) = self.get(entity) {
-            Some(TileInfo::new(entity, pos, auto_tile))
+        if let Ok((entity, pos, auto_tile, category)) = self.get(entity) {
+            Some(TileInfo::new(entity, pos, auto_tile, category))
         } else {
             None
         }
@@ -58,17 +58,15 @@ impl<'a> AutoTilemap for TilemapCache<'a> {
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn on_change_auto_tile<T: Layer + Component>(
     mut commands: Commands,
-    changed_tiles: Query<(Entity, &TilePos, &AutoTileId), Changed<AutoTileId>>,
-    all_tiles: Query<(Entity, &TilePos, &AutoTileId)>,
-    mut working_tiles: Query<(
-        Entity,
-        &TilePos,
-        &mut TileTextureIndex,
-        &AutoTileId,
-        Option<&mut AnimatedTile>,
-    )>,
+    changed_tiles: Query<
+        (Entity, &TilePos, &AutoTileId, &AutoTileCategory),
+        Or<(Changed<AutoTileId>, Changed<AutoTileCategory>)>,
+    >,
+    all_tiles: Query<(Entity, &TilePos, &AutoTileId, &AutoTileCategory)>,
+    mut working_tiles: Query<(&mut TileTextureIndex, &AutoTileId, Option<&mut AnimatedTile>), With<TilePos>>,
     tilesets: Tilesets,
     tile_storage: Query<&TileStorage, With<T>>,
 ) {
@@ -82,8 +80,8 @@ pub fn on_change_auto_tile<T: Layer + Component>(
         tile_query: &all_tiles,
     };
     let mut tiler = AutoTiler::new(&mut cache);
-    for (entity, pos, auto_tile) in changed_tiles.iter() {
-        tiler.add_tile(TileInfo::new(entity, pos, auto_tile), true);
+    for (entity, pos, auto_tile, category) in changed_tiles.iter() {
+        tiler.add_tile(TileInfo::new(entity, pos, auto_tile, category), true);
     }
 
     let requests = tiler.finish();
@@ -94,14 +92,8 @@ pub fn on_change_auto_tile<T: Layer + Component>(
 pub fn on_remove_auto_tile<T: Layer + Component>(
     mut commands: Commands,
     mut events: EventReader<RemoveAutoTileEvent>,
-    all_tiles: Query<(Entity, &TilePos, &AutoTileId)>,
-    mut working_tiles: Query<(
-        Entity,
-        &TilePos,
-        &mut TileTextureIndex,
-        &AutoTileId,
-        Option<&mut AnimatedTile>,
-    )>,
+    all_tiles: Query<(Entity, &TilePos, &AutoTileId, &AutoTileCategory)>,
+    mut working_tiles: Query<(&mut TileTextureIndex, &AutoTileId, Option<&mut AnimatedTile>), With<TilePos>>,
     tilesets: Tilesets,
     tile_storage: Query<&TileStorage, With<T>>,
 ) {
@@ -117,8 +109,13 @@ pub fn on_remove_auto_tile<T: Layer + Component>(
     let mut tiler = AutoTiler::new(&mut cache);
 
     for ref event in events.iter() {
-        let RemoveAutoTileEvent { entity, pos, auto_id } = event;
-        tiler.add_tile(TileInfo::new(*entity, pos, auto_id), true);
+        let RemoveAutoTileEvent {
+            entity,
+            pos,
+            auto_id,
+            category,
+        } = event;
+        tiler.add_tile(TileInfo::new(*entity, pos, auto_id, category), true);
     }
 
     let requests = tiler.finish();
@@ -129,19 +126,13 @@ pub fn on_remove_auto_tile<T: Layer + Component>(
 fn apply_requests(
     requests: &[AutoTileRequest<TileInfo>],
     tilesets: &Tilesets,
-    query: &mut Query<(
-        Entity,
-        &TilePos,
-        &mut TileTextureIndex,
-        &AutoTileId,
-        Option<&mut AnimatedTile>,
-    )>,
+    query: &mut Query<(&mut TileTextureIndex, &AutoTileId, Option<&mut AnimatedTile>), With<TilePos>>,
     commands: &mut Commands,
 ) {
     for request in requests.iter() {
         let rule = request.rule;
         let TileInfo { entity, .. } = request.tile;
-        if let Ok((.., ref mut tile_texture, auto_tile, ref mut anim)) = query.get_mut(entity) {
+        if let Ok((ref mut tile_texture, auto_tile, ref mut anim)) = query.get_mut(entity) {
             if let Some(tileset) = tilesets.get_by_id(&auto_tile.tileset_id) {
                 if let Some(tile_name) = tileset.get_tile_name(&auto_tile.group_id) {
                     //Check if variant.

@@ -6,7 +6,10 @@ use bevy_ecs_tilemap::prelude::*;
 use bevy_tileset::{auto::AutoTileId, prelude::*};
 use iyes_progress::Progress;
 
-use super::{FeatureLayer, FeatureLayerObject, Features, Layer, Map, TileLayer, TileLayerObject, TILE_SIZE};
+use super::{
+    auto_tile::AutoTileCategory, FeatureLayer, FeatureLayerObject, Features, Layer, Map, TileLayer, TileLayerObject,
+    TILE_SIZE,
+};
 
 pub fn spawn_tiles(
     mut commands: Commands,
@@ -164,7 +167,7 @@ pub struct FeatureQuery<'w, 's> {
     commands: Commands<'w, 's>,
     parent_query: Query<'w, 's, Entity, With<FeatureLayer>>,
     texture_query: Query<'w, 's, (Entity, &'static mut TileTextureIndex), With<FeatureLayerObject>>,
-    auto_query: Query<'w, 's, (Entity, &'static AutoTileId), With<FeatureLayerObject>>,
+    auto_query: Query<'w, 's, (Entity, &'static AutoTileId, &'static AutoTileCategory), With<FeatureLayerObject>>,
     feature_storage: Query<'w, 's, &'static mut TileStorage, With<FeatureLayer>>,
     tilesets: Tilesets<'w, 's>,
     remove_tile_events: EventWriter<'w, 's, super::auto_tile::RemoveAutoTileEvent>,
@@ -240,11 +243,12 @@ impl<'w, 's> FeatureQuery<'w, 's> {
             self.commands.entity(feature).despawn_recursive();
             feature_storage.remove(&feature_pos);
 
-            if let Ok((_feature_entity, feature_auto)) = self.auto_query.get(feature) {
+            if let Ok((_feature_entity, feature_auto, category)) = self.auto_query.get(feature) {
                 self.remove_tile_events.send(super::auto_tile::RemoveAutoTileEvent {
                     entity: feature,
                     pos: feature_pos,
                     auto_id: *feature_auto,
+                    category: *category,
                 });
             }
         }
@@ -286,7 +290,7 @@ fn fill_feature(
     };
 
     if is_auto {
-        feature_builder.insert(AutoTileId { group_id, tileset_id });
+        feature_builder.insert_bundle((AutoTileId { group_id, tileset_id }, feature.auto_tile_category()));
     }
 
     feature_builder.insert_bundle(TileBundle {

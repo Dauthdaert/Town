@@ -90,11 +90,9 @@ pub fn handle_job_creation_hotkeys(
                             let entity = feature_tile_storage.get(&tile_pos);
                             if entity.is_none() {
                                 // Hack to add a door.
-                                if i == 0 && j == 1 {
-                                    continue;
-                                }
-
-                                let feature = if i == 0 || j == 0 || i == i_max || j == j_max {
+                                let feature = if i == 0 && j == 1 {
+                                    Features::Door
+                                } else if i == 0 || j == 0 || i == i_max || j == j_max {
                                     Features::Wall
                                 } else {
                                     Features::Floor

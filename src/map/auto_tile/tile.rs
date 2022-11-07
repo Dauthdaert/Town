@@ -15,19 +15,27 @@ impl TileCoords for TileCoord {
     }
 }
 
+#[derive(Component, Clone, Copy, PartialEq, Eq)]
+pub enum AutoTileCategory {
+    None,
+    Wall,
+}
+
 #[derive(Clone, Copy)]
 pub struct TileInfo {
     pub pos: TileCoord,
     pub entity: Entity,
     pub auto_tile: AutoTileId,
+    pub category: AutoTileCategory,
 }
 
 impl TileInfo {
-    pub fn new(entity: Entity, pos: &TilePos, auto_tile: &AutoTileId) -> Self {
+    pub fn new(entity: Entity, pos: &TilePos, auto_tile: &AutoTileId, category: &AutoTileCategory) -> Self {
         Self {
             pos: TileCoord(*pos),
             entity,
             auto_tile: *auto_tile,
+            category: *category,
         }
     }
 }
@@ -45,5 +53,6 @@ impl AutoTile for TileInfo {
 
     fn can_match(&self, other: &Self) -> bool {
         self.auto_tile == other.auto_tile
+            || (self.category != AutoTileCategory::None && self.category == other.category)
     }
 }
