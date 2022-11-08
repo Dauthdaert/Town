@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use big_brain::prelude::*;
 
-use crate::{ai::characteristics::JobSeeker, jobs::job_queue::JobQueue};
+use crate::{ai::characteristics::JobSeeker, jobs::job_queue::JobQueue, map::Map};
 
 use super::components::HasJob;
 
@@ -9,6 +9,7 @@ use super::components::HasJob;
 pub struct TakingJob;
 
 pub fn take_job(
+    map: Res<Map>,
     mut commands: Commands,
     mut job_queue: ResMut<JobQueue>,
     actors: Query<Option<&HasJob>, With<JobSeeker>>,
@@ -25,8 +26,13 @@ pub fn take_job(
                     // TODO!(2, Wayan, 1): Improve job selection to incorporate distance to actor to prioritise jobs.
                     let job = job_queue.jobs.pop_front();
                     if let Some(job) = job {
-                        commands.entity(*actor).insert(HasJob::new(job));
-                        *action_state = ActionState::Success;
+                        if map.is_neighbor_passable(job.position.x, job.position.y) {
+                            commands.entity(*actor).insert(HasJob::new(job));
+                            *action_state = ActionState::Success;
+                        } else {
+                            job_queue.jobs.push_back(job);
+                            *action_state = ActionState::Failure;
+                        }
                     } else {
                         *action_state = ActionState::Failure;
                     }

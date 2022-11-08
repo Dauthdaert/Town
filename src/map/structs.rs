@@ -1,6 +1,6 @@
 use bevy::prelude::Vec2;
 use bevy_ecs_tilemap::tiles::TilePos;
-use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConfig};
+use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConfig, prelude::Neighborhood};
 use if_chain::if_chain;
 
 use super::{biomes::Biomes, features::Features, neighborhood::EuclideanNeighborhood, TILE_SIZE};
@@ -122,6 +122,19 @@ impl Map {
                 !self.tiles[idx].is_obstacle()
             }
         }
+    }
+    
+    pub fn is_neighbor_passable(&self, x: u32, y: u32) -> bool {
+        if x > self.width || y > self.height {
+            return false;
+        }
+        
+        let mut tiles = Vec::new();  
+        self.neighborhood.get_all_neighbors(
+            (x.try_into().unwrap(), y.try_into().unwrap()),
+            &mut tiles,
+        );
+        tiles.iter().any(|t| self.is_passable(t.0 as u32, t.1 as u32))
     }
 }
 
