@@ -14,7 +14,6 @@ use super::{
 pub fn spawn_tiles(
     mut commands: Commands,
     tilesets: Tilesets,
-    array_texture_loader: Res<ArrayTextureLoader>,
     map: Res<Map>,
     tile_layer_query: Query<Entity, With<TileLayer>>,
 ) -> Progress {
@@ -89,12 +88,6 @@ pub fn spawn_tiles(
                 transform: Transform::from_translation(Vec3::splat(TileLayer::z_index())),
                 ..default()
             });
-
-        array_texture_loader.add(TilemapArrayTexture {
-            texture: TilemapTexture::Single(tileset.texture().clone()),
-            tile_size: TILE_SIZE,
-            ..default()
-        });
     }
 
     true.into()
@@ -103,7 +96,6 @@ pub fn spawn_tiles(
 pub fn spawn_features(
     mut commands: Commands,
     tilesets: Tilesets,
-    array_texture_loader: Res<ArrayTextureLoader>,
     map: Res<Map>,
     feature_layer_query: Query<Entity, With<FeatureLayer>>,
 ) -> Progress {
@@ -151,12 +143,6 @@ pub fn spawn_features(
                 transform: Transform::from_translation(Vec3::splat(FeatureLayer::z_index())),
                 ..default()
             });
-
-        array_texture_loader.add(TilemapArrayTexture {
-            texture: TilemapTexture::Single(tileset.texture().clone()),
-            tile_size: TILE_SIZE,
-            ..default()
-        });
     }
 
     true.into()
