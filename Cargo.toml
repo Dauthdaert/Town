@@ -50,7 +50,7 @@ dev = [
 ]
 
 [dependencies]
-bevy = { version = "0.8.*", default-features = false }
+bevy = { version = "0.9.*", default-features = false }
 iyes_loopless = "0.7.*"
 iyes_progress = "0.5.*"
 bevy_kira_audio = "0.12.*"

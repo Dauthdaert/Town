@@ -6,6 +6,6 @@ workspace = "../.."
 
 [dependencies]
 town = { package = "town", path = "../.." }
-bevy = { version = "0.8", default-features = false }
+bevy = { version = "0.9", default-features = false }
 image = "0.24.5"
 winit = "0.26.1"
