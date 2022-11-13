@@ -41,6 +41,8 @@ default = [
     "bevy_asset_loader/stageless",
     "bevy_asset_loader/progress_tracking",
     "bevy_asset_loader/progress_tracking_stageless",
+    "iyes_loopless/app",
+    "iyes_loopless/states",
     "bevy_tileset/variants",
     "bevy_tileset/auto-tile"
 ]
@@ -51,15 +53,15 @@ dev = [
 
 [dependencies]
 bevy = { version = "0.8.*", default-features = false }
-iyes_loopless = "0.7.*"
-iyes_progress = "0.5.*"
+iyes_loopless = { version = "0.8.*", default-features = false }
+iyes_progress = "0.6.*"
 bevy_kira_audio = "0.12.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
 bevy_tileset = { version = "0.5.0", default-features = false }
 leafwing-input-manager = "0.6.*"
 bevy-inspector-egui = "0.13.*"
 bevy_turborand = "0.3.*"
-bevy_asset_loader = "0.12.*"
+bevy_asset_loader = "0.13.*"
 big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
 bevy_mouse_tracking_plugin = "0.4.*"
 hierarchical_pathfinding = { git = "https://github.com/mich101mich/hierarchical_pathfinding.git" }
