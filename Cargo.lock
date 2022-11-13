@@ -317,7 +317,7 @@ dependencies = [
  "bevy",
  "bevy_asset_loader_derive",
  "iyes_loopless",
- "iyes_progress",
+ "iyes_progress 0.5.0",
 ]
 
 [[package]]
@@ -2399,6 +2399,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "iyes_progress"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9eaeccd2b11ae5271bf1fe04c94915b61cb1697fbba97dd313f5844381c57c38"
+dependencies = [
+ "bevy_app",
+ "bevy_ecs",
+]
+
+[[package]]
 name = "jni"
 version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3945,7 +3955,7 @@ dependencies = [
  "if_chain",
  "image 0.24.5",
  "iyes_loopless",
- "iyes_progress",
+ "iyes_progress 0.6.0",
  "leafwing-input-manager",
  "noise",
  "winit",
