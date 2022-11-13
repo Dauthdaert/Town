@@ -6,7 +6,10 @@ const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
 
 #[allow(clippy::type_complexity)]
 pub fn button_system(
-    mut interaction_query: Query<(&Interaction, &mut UiColor), (With<Focusable>, With<Button>, Changed<Interaction>)>,
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor),
+        (With<Focusable>, With<Button>, Changed<Interaction>),
+    >,
 ) {
     for (interaction, mut material) in interaction_query.iter_mut() {
         *material = match *interaction {

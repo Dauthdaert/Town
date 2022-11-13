@@ -40,7 +40,7 @@ pub enum JobCreation {
     BuildRoom,
 }
 
-#[derive(Clone, Copy, Debug, Deref)]
+#[derive(Resource, Clone, Copy, Debug, Deref)]
 pub struct JobSelectionType(pub JobCreation);
 
 #[derive(Actionlike, Clone, Debug, Copy, PartialEq, Eq)]
@@ -49,7 +49,7 @@ pub enum JobCreationControls {
     Exit,
 }
 
-#[derive(AssetCollection)]
+#[derive(Resource, AssetCollection)]
 pub struct JobCreationMenuAssets {
     #[asset(path = "textures/cursor.png")]
     pub cursor: Handle<Image>,

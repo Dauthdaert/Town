@@ -14,7 +14,7 @@ use crate::{
 
 use super::{job_queue::*, JobCreation, JobCreationControls, JobCreationMenuManager, JobSelectionType};
 
-#[derive(Clone, Copy, Debug, Deref, DerefMut)]
+#[derive(Resource, Clone, Copy, Debug, Deref, DerefMut)]
 pub struct SelectionStart(TilePos);
 
 pub fn handle_job_creation_hotkeys(
