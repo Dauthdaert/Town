@@ -7,7 +7,7 @@ mod navigation;
 mod splash;
 mod systems;
 
-#[derive(AssetCollection)]
+#[derive(Resource, AssetCollection)]
 pub struct UiAssets {
     #[asset(path = "fonts/FiraMono-Medium.ttf")]
     pub font_medium: Handle<Font>,

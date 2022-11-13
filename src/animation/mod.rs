@@ -7,7 +7,7 @@ use crate::states::GameStates;
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
 
-#[derive(AssetCollection)]
+#[derive(Resource, AssetCollection)]
 pub struct SpriteAssets {
     #[asset(texture_atlas(tile_size_x = 16., tile_size_y = 16., columns = 4, rows = 1))]
     #[asset(path = "textures/dwarf_villager_idle.png")]
