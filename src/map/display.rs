@@ -26,68 +26,68 @@ pub fn spawn_tiles(
 
         let tileset = tilesets.get_by_name("Tiles").expect("Tiles tileset should be loaded.");
 
-        commands
+        let tilemap_entity = commands
             .spawn()
             .insert_bundle((Name::from("Tile Layer"), TileLayer))
-            .with_children(|parent| {
-                for (idx, tile_biome) in map.tiles.iter().enumerate() {
-                    let tile_pos = map.idx_tile_xy(idx);
-                    let tilemap_id = TilemapId(parent.parent_entity());
+            .id();
 
-                    let mut tile_builder = parent.spawn();
+        for (idx, tile_biome) in map.tiles.iter().enumerate() {
+            let mut tile_builder = commands.spawn();
 
-                    let (tile_index, tile_data) = tileset
-                        .select_tile(tile_biome.tile_name())
-                        .unwrap_or_else(|| panic!("Tile {} should exist.", tile_biome.tile_name()));
-                    let texture_index = match tile_index {
-                        TileIndex::Standard(index) => TileTextureIndex(index as u32),
-                        TileIndex::Animated(start, end, speed) => {
-                            tile_builder.insert(AnimatedTile {
-                                start: start as u32,
-                                end: end as u32,
-                                speed,
-                            });
-
-                            TileTextureIndex(start as u32)
-                        }
-                    };
-
-                    if tile_data.is_auto() {
-                        let group_id = *tileset
-                            .get_tile_group_id(tile_biome.tile_name())
-                            .expect("Tile should exist.");
-                        let tileset_id = *tileset.id();
-                        tile_builder.insert(AutoTileId { group_id, tileset_id });
-                    }
-
-                    tile_builder.insert_bundle(TileBundle {
-                        position: tile_pos,
-                        tilemap_id,
-                        texture_index,
-                        ..default()
+            let (tile_index, tile_data) = tileset
+                .select_tile(tile_biome.tile_name())
+                .unwrap_or_else(|| panic!("Tile {} should exist.", tile_biome.tile_name()));
+            let texture_index = match tile_index {
+                TileIndex::Standard(index) => TileTextureIndex(index as u32),
+                TileIndex::Animated(start, end, speed) => {
+                    tile_builder.insert(AnimatedTile {
+                        start: start as u32,
+                        end: end as u32,
+                        speed,
                     });
 
-                    if tile_biome.is_water_source() {
-                        tile_builder.insert(super::components::WaterSource);
-                    }
-
-                    if tile_biome.is_obstacle() {
-                        tile_builder.insert(super::components::Obstacle);
-                    }
-
-                    let tile_entity = tile_builder.insert_bundle((Name::from("Tile"), TileLayerObject)).id();
-                    tile_storage.set(&tile_pos, tile_entity);
+                    TileTextureIndex(start as u32)
                 }
-            })
-            .insert_bundle(TilemapBundle {
-                grid_size: TILE_SIZE.into(),
-                size: tilemap_size,
-                storage: tile_storage,
-                texture: TilemapTexture::Single(tileset.texture().clone()),
-                tile_size: TILE_SIZE,
-                transform: Transform::from_translation(Vec3::splat(TileLayer::z_index())),
-                ..default()
-            });
+            };
+
+            if tile_data.is_auto() {
+                let group_id = *tileset
+                    .get_tile_group_id(tile_biome.tile_name())
+                    .expect("Tile should exist.");
+                let tileset_id = *tileset.id();
+                tile_builder.insert(AutoTileId { group_id, tileset_id });
+            }
+
+            if tile_biome.is_water_source() {
+                tile_builder.insert(super::components::WaterSource);
+            }
+
+            if tile_biome.is_obstacle() {
+                tile_builder.insert(super::components::Obstacle);
+            }
+
+            let tile_pos = map.idx_tile_xy(idx);
+            let tile_entity = tile_builder
+                .insert_bundle(TileBundle {
+                    position: tile_pos,
+                    tilemap_id: TilemapId(tilemap_entity),
+                    texture_index,
+                    ..default()
+                })
+                .insert_bundle((Name::from("Tile"), TileLayerObject))
+                .id();
+            tile_storage.set(&tile_pos, tile_entity);
+        }
+
+        commands.entity(tilemap_entity).insert_bundle(TilemapBundle {
+            grid_size: TILE_SIZE.into(),
+            size: tilemap_size,
+            storage: tile_storage,
+            texture: TilemapTexture::Single(tileset.texture().clone()),
+            tile_size: TILE_SIZE,
+            transform: Transform::from_translation(Vec3::splat(TileLayer::z_index())),
+            ..default()
+        });
     }
 
     true.into()
@@ -109,40 +109,40 @@ pub fn spawn_features(
             .get_by_name("Features")
             .expect("Features tileset should be loaded.");
 
-        commands
+        let features_entity = commands
             .spawn()
             .insert_bundle((Name::from("Feature Layer"), FeatureLayer))
-            .with_children(|child_builder| {
-                for (idx, feature) in map.features.iter().enumerate() {
-                    if let Some(feature) = feature {
-                        let feature_pos = map.idx_tile_xy(idx);
-                        let parent = child_builder.parent_entity();
-                        let feature_name = feature.tile_name();
-                        let group_id = *tileset
-                            .get_tile_group_id(feature_name)
-                            .unwrap_or_else(|| panic!("Feature {} should exist.", feature_name));
-                        let tileset_id = *tileset.id();
+            .id();
 
-                        let tile = tileset
-                            .select_tile(feature_name)
-                            .map(|(tile_index, tile_data)| (tile_index, tile_data.is_auto(), group_id, tileset_id))
-                            .unwrap_or_else(|| panic!("Feature {} should exist.", feature_name));
+        for (idx, feature) in map.features.iter().enumerate() {
+            if let Some(feature) = feature {
+                let feature_pos = map.idx_tile_xy(idx);
+                let parent = features_entity;
+                let feature_name = feature.tile_name();
+                let group_id = *tileset
+                    .get_tile_group_id(feature_name)
+                    .unwrap_or_else(|| panic!("Feature {} should exist.", feature_name));
+                let tileset_id = *tileset.id();
 
-                        let feature_entity =
-                            fill_feature(&mut child_builder.spawn(), parent, tile, feature, feature_pos);
-                        feature_storage.set(&feature_pos, feature_entity);
-                    }
-                }
-            })
-            .insert_bundle(TilemapBundle {
-                grid_size: TILE_SIZE.into(),
-                size: feature_map_size,
-                storage: feature_storage,
-                texture: TilemapTexture::Single(tileset.texture().clone()),
-                tile_size: TILE_SIZE,
-                transform: Transform::from_translation(Vec3::splat(FeatureLayer::z_index())),
-                ..default()
-            });
+                let tile = tileset
+                    .select_tile(feature_name)
+                    .map(|(tile_index, tile_data)| (tile_index, tile_data.is_auto(), group_id, tileset_id))
+                    .unwrap_or_else(|| panic!("Feature {} should exist.", feature_name));
+
+                let feature_entity = fill_feature(&mut commands.spawn(), parent, tile, feature, feature_pos);
+                feature_storage.set(&feature_pos, feature_entity);
+            }
+        }
+
+        commands.entity(features_entity).insert_bundle(TilemapBundle {
+            grid_size: TILE_SIZE.into(),
+            size: feature_map_size,
+            storage: feature_storage,
+            texture: TilemapTexture::Single(tileset.texture().clone()),
+            tile_size: TILE_SIZE,
+            transform: Transform::from_translation(Vec3::splat(FeatureLayer::z_index())),
+            ..default()
+        });
     }
 
     true.into()
