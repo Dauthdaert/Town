@@ -59,7 +59,7 @@ bevy_tileset = { version = "0.5.0", default-features = false }
 leafwing-input-manager = "0.6.*"
 bevy-inspector-egui = "0.13.*"
 bevy_turborand = "0.3.*"
-bevy_asset_loader = "0.12.*"
+bevy_asset_loader = "0.13.*"
 big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
 bevy_mouse_tracking_plugin = "0.4.*"
 hierarchical_pathfinding = { git = "https://github.com/mich101mich/hierarchical_pathfinding.git" }
