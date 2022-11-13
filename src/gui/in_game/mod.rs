@@ -153,13 +153,8 @@ fn setup_in_game_ui(
                         }[InGameUiMenu::BuildMenu.to_menu(); build::InGameBuildUiRoot](
                             button {
                                 display: Display::None
-                            }[build::InGameBuildUiElem::BuildWallButton.to_button();](
-                                node[text_bundle("Wall", 20.0);]
-                            ),
-                            button {
-                                display: Display::None
-                            }[build::InGameBuildUiElem::BuildFloorButton.to_button();](
-                                node[text_bundle("Floor", 20.0);]
+                            }[build::InGameBuildUiElem::BuildRoadButton.to_button();](
+                                node[text_bundle("Road", 20.0);]
                             ),
                             button {
                                 display: Display::None

@@ -14,16 +14,14 @@ pub struct InGameBuildUiRoot;
 #[allow(clippy::enum_variant_names)]
 #[derive(Component, Clone, Copy)]
 pub enum InGameBuildUiElem {
-    BuildWallButton,
-    BuildFloorButton,
+    BuildRoadButton,
     BuildRoomButton,
 }
 
 impl InGameBuildUiElem {
     fn name(&self) -> &str {
         match self {
-            InGameBuildUiElem::BuildWallButton => "BuildWallButton",
-            InGameBuildUiElem::BuildFloorButton => "BuildFloorButton",
+            InGameBuildUiElem::BuildRoadButton => "BuildRoadButton",
             InGameBuildUiElem::BuildRoomButton => "BuildRoomButton",
         }
     }
@@ -60,13 +58,9 @@ pub fn update_build_menu_ui(
     let mut requested_state_change = None;
     for button in events.nav_iter().activated_in_query(&elements) {
         match button {
-            InGameBuildUiElem::BuildWallButton => {
+            InGameBuildUiElem::BuildRoadButton => {
                 requested_state_change = Some(GameStates::InJobSelection);
-                commands.insert_resource(JobSelectionType(JobCreation::Build(crate::map::Features::Wall)));
-            }
-            InGameBuildUiElem::BuildFloorButton => {
-                requested_state_change = Some(GameStates::InJobSelection);
-                commands.insert_resource(JobSelectionType(JobCreation::Build(crate::map::Features::Floor)));
+                commands.insert_resource(JobSelectionType(JobCreation::Build(crate::map::Features::Road)));
             }
             InGameBuildUiElem::BuildRoomButton => {
                 requested_state_change = Some(GameStates::InJobSelection);

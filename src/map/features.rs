@@ -16,6 +16,7 @@ pub enum Features {
     Wall,
     Floor,
     Door,
+    Road,
 }
 
 impl Features {
@@ -35,6 +36,7 @@ impl Features {
             Features::Wall => "Wall",
             Features::Floor => "Floor",
             Features::Door => "Door",
+            Features::Road => "Road",
         }
     }
 
@@ -45,8 +47,16 @@ impl Features {
         }
     }
 
+    pub fn cost(&self) -> Option<isize> {
+        match self {
+            Features::StoneWall | Features::Wall => Some(-1),
+            Features::Road => Some(70),
+            _ => None,
+        }
+    }
+
     pub fn is_obstacle(&self) -> bool {
-        matches!(self, Features::StoneWall | Features::Wall)
+        self.cost().map_or(false, |c| c == -1)
     }
 
     pub fn is_choppable(&self) -> bool {
