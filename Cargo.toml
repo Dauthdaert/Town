@@ -54,13 +54,13 @@ bevy = { version = "0.9.*", default-features = false }
 iyes_loopless = "0.7.*"
 iyes_progress = "0.5.*"
 bevy_kira_audio = "0.13.*"
-bevy_ecs_tilemap = { git = "https://github.com/Dauthdaert/bevy_ecs_tilemap.git" }
+bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
 bevy_tileset = { version = "0.6.0", default-features = false }
 leafwing-input-manager = "0.7.*"
 bevy-inspector-egui = "0.14.*"
 bevy_turborand = "0.4.*"
 bevy_asset_loader = "0.12.*"
-big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
+big-brain = { git = "https://github.com/zkat/big-brain.git" }
 bevy_mouse_tracking_plugin = "0.4.*"
 hierarchical_pathfinding = { git = "https://github.com/mich101mich/hierarchical_pathfinding.git" }
 if_chain = "1.0.2"
