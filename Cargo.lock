@@ -603,7 +603,7 @@ dependencies = [
 [[package]]
 name = "bevy_ecs_tilemap"
 version = "0.9.0"
-source = "git+https://github.com/Dauthdaert/bevy_ecs_tilemap.git#274050fe736453e20eb164920c3265752347f325"
+source = "git+https://github.com/Dauthdaert/bevy_ecs_tilemap.git#66bb3a00edcb17abd8f0a3a7da7b0e07c9ff8f88"
 dependencies = [
  "bevy 0.9.0",
  "log",
@@ -612,9 +612,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_egui"
-version = "0.17.0"
+version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33bf9a0085909f3dc3d5ca7be6a6e6792b8b30b98bba9cca13baa49e2f3e3206"
+checksum = "1cec5fb091ccae94917266fe9b1af8339ef1e47763360b38273a31457598b030"
 dependencies = [
  "arboard",
  "bevy 0.9.0",
@@ -1350,25 +1350,25 @@ dependencies = [
 
 [[package]]
 name = "bevy_tile_atlas"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "894aa0dc1f9fe2cf255a97c2e432a4d171018756d8b4fb70b3f255b8bbc699ec"
+checksum = "f631f1fe6b74d8a1f00b45c37b2eeee5ea26c413bda25e59077c75fb415fe167"
 dependencies = [
- "bevy_asset 0.8.1",
- "bevy_ecs 0.8.1",
- "bevy_log 0.8.1",
- "bevy_math 0.8.1",
- "bevy_render 0.8.1",
- "bevy_sprite 0.8.1",
- "bevy_utils 0.8.1",
+ "bevy_asset 0.9.0",
+ "bevy_ecs 0.9.0",
+ "bevy_log 0.9.0",
+ "bevy_math 0.9.0",
+ "bevy_render 0.9.0",
+ "bevy_sprite 0.9.0",
+ "bevy_utils 0.9.0",
  "thiserror",
 ]
 
 [[package]]
 name = "bevy_tileset"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6dc4f00bef91b099be62ecbf861f566ce271a4e56881857871423c871c911b61"
+checksum = "9063bed0be31567830fa1cf8453d035d6346c62c97b81f2fb0c487ab5fd427d5"
 dependencies = [
  "bevy_tileset_core",
  "bevy_tileset_tiles",
@@ -1376,12 +1376,12 @@ dependencies = [
 
 [[package]]
 name = "bevy_tileset_core"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c887b717f7b0e8649860d683279d620bd1e1e387d8beb799f7a51e0879584ad5"
+checksum = "803c8074ae5ebc15c1ea07bc1649376f1cd749dc57aced0d5ba5693ec37ac98e"
 dependencies = [
  "anyhow",
- "bevy 0.8.1",
+ "bevy 0.9.0",
  "bevy_tile_atlas",
  "bevy_tileset_tiles",
  "futures",
@@ -1393,12 +1393,12 @@ dependencies = [
 
 [[package]]
 name = "bevy_tileset_tiles"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cbcc3c8ddca55b9f46c3a3bc212eaeb07aa97e2c4d3e7497993ea291df26cc8"
+checksum = "918a9039e34a204b9b56b825cd1a0e37be788666d65ea05a0669cc168588b911"
 dependencies = [
- "bevy_asset 0.8.1",
- "bevy_render 0.8.1",
+ "bevy_asset 0.9.0",
+ "bevy_render 0.9.0",
  "serde",
 ]
 
