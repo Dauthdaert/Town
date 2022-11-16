@@ -1343,11 +1343,12 @@ dependencies = [
 
 [[package]]
 name = "bevy_turborand"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3c290ae2c7577a1a184755daf2c8ef27c1eb68f80e7909280836e1b37b87c41"
+checksum = "2e46d4262504f9ac590401557401207c613dc1ba1a6bf4dbd7eb9c859e93705c"
 dependencies = [
- "bevy 0.8.1",
+ "bevy 0.9.0",
+ "serde",
  "turborand",
 ]
 
@@ -4734,12 +4735,13 @@ checksum = "375812fa44dab6df41c195cd2f7fecb488f6c09fbaafb62807488cefab642bff"
 
 [[package]]
 name = "turborand"
-version = "0.6.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "264a653ca8a3ef1c39cd4e4d0b6bce2ac94a047ac1d5d888779ecddacc896222"
+checksum = "70711f2899491ddb98a75182519a0339b0e41b9d49dea683faa157c7b5a3ceb3"
 dependencies = [
  "getrandom 0.2.8",
  "instant",
+ "serde",
 ]
 
 [[package]]
