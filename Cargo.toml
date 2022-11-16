@@ -58,7 +58,7 @@ iyes_progress = "0.6.*"
 bevy_kira_audio = "0.13.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
 bevy_tileset = { version = "0.5.0", default-features = false }
-leafwing-input-manager = "0.6.*"
+leafwing-input-manager = "0.7.*"
 bevy-inspector-egui = "0.13.*"
 bevy_turborand = "0.3.*"
 bevy_asset_loader = "0.13.*"
