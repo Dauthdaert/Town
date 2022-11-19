@@ -385,7 +385,7 @@ dependencies = [
  "anyhow",
  "bevy 0.8.1",
  "bevy_asset_loader_derive",
- "iyes_loopless",
+ "iyes_loopless 0.8.0",
  "iyes_progress",
 ]
 
@@ -2917,6 +2917,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "iyes_loopless"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98b3c414f36439456238cb263d9d569716dc307dfdcb98d96fc7b7b1839db9ce"
+dependencies = [
+ "bevy_app 0.9.0",
+ "bevy_ecs 0.9.0",
+ "bevy_utils 0.9.0",
+]
+
+[[package]]
 name = "iyes_progress"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2924,7 +2935,7 @@ checksum = "9eaeccd2b11ae5271bf1fe04c94915b61cb1697fbba97dd313f5844381c57c38"
 dependencies = [
  "bevy_app 0.8.1",
  "bevy_ecs 0.8.1",
- "iyes_loopless",
+ "iyes_loopless 0.8.0",
 ]
 
 [[package]]
@@ -4646,7 +4657,7 @@ dependencies = [
  "hierarchical_pathfinding",
  "if_chain",
  "image 0.24.5",
- "iyes_loopless",
+ "iyes_loopless 0.9.0",
  "iyes_progress",
  "leafwing-input-manager",
  "noise",
