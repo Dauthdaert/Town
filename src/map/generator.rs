@@ -25,7 +25,7 @@ pub fn start_generate_map(mut commands: Commands, mut global_rng: ResMut<GlobalR
         let map_pathfinding = MapPathfinding::new(&map);
         (map, map_pathfinding)
     });
-    commands.spawn().insert(GenerateMap(task));
+    commands.spawn(GenerateMap(task));
 }
 
 pub fn handle_generate_map(

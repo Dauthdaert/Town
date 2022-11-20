@@ -27,7 +27,7 @@ pub use features::Features;
 pub use layers::*;
 pub use structs::*;
 
-#[derive(AssetCollection)]
+#[derive(Resource, AssetCollection)]
 pub struct TilemapAssets {
     #[allow(dead_code)]
     #[asset(path = "tilesets/tiles.ron")]
