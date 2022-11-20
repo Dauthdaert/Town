@@ -378,22 +378,22 @@ dependencies = [
 
 [[package]]
 name = "bevy_asset_loader"
-version = "0.13.0"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d72dc8745b7463cb2f3b9035c1fad033f15abd2820bb9cbe10593e7e0c101c99"
+checksum = "636bfbf59389a96bf1caa9e1ea6cdf966f7a294829ee784ef65c2e88ce504802"
 dependencies = [
  "anyhow",
- "bevy 0.8.1",
+ "bevy 0.9.0",
  "bevy_asset_loader_derive",
- "iyes_loopless",
- "iyes_progress",
+ "iyes_loopless 0.9.1",
+ "iyes_progress 0.7.1",
 ]
 
 [[package]]
 name = "bevy_asset_loader_derive"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d70842faf70ee669bdb75618124d8e33048898898f494ad8b047a07ef5572fb4"
+checksum = "c80a8c433e1c39abc2a71a241a3993acbaddc9b9475a3e9b12639d2963335fdc"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -751,7 +751,7 @@ dependencies = [
  "bevy_ptr 0.8.1",
  "bevy_reflect 0.8.1",
  "bevy_render 0.8.1",
- "bevy_sprite",
+ "bevy_sprite 0.8.1",
  "bevy_tasks 0.8.1",
  "bevy_text",
  "bevy_time 0.8.1",
@@ -784,6 +784,7 @@ dependencies = [
  "bevy_ptr 0.9.0",
  "bevy_reflect 0.9.0",
  "bevy_render 0.9.0",
+ "bevy_sprite 0.9.0",
  "bevy_tasks 0.9.0",
  "bevy_time 0.9.0",
  "bevy_transform 0.9.0",
@@ -1183,6 +1184,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_sprite"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b135b2ccf7c5eaf9b3e20e39ef80081842f122081c8ce988cb2054afd1af270e"
+dependencies = [
+ "bevy_app 0.9.0",
+ "bevy_asset 0.9.0",
+ "bevy_core_pipeline 0.9.0",
+ "bevy_derive 0.9.0",
+ "bevy_ecs 0.9.0",
+ "bevy_log 0.9.0",
+ "bevy_math 0.9.0",
+ "bevy_reflect 0.9.0",
+ "bevy_render 0.9.0",
+ "bevy_transform 0.9.0",
+ "bevy_utils 0.9.0",
+ "bitflags",
+ "bytemuck",
+ "fixedbitset",
+ "guillotiere",
+ "rectangle-pack",
+ "thiserror",
+]
+
+[[package]]
 name = "bevy_tasks"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1226,7 +1252,7 @@ dependencies = [
  "bevy_math 0.8.1",
  "bevy_reflect 0.8.1",
  "bevy_render 0.8.1",
- "bevy_sprite",
+ "bevy_sprite 0.8.1",
  "bevy_transform 0.8.1",
  "bevy_utils 0.8.1",
  "bevy_window 0.8.1",
@@ -1246,7 +1272,7 @@ dependencies = [
  "bevy_log 0.8.1",
  "bevy_math 0.8.1",
  "bevy_render 0.8.1",
- "bevy_sprite",
+ "bevy_sprite 0.8.1",
  "bevy_utils 0.8.1",
  "thiserror",
 ]
@@ -1368,7 +1394,7 @@ dependencies = [
  "bevy_math 0.8.1",
  "bevy_reflect 0.8.1",
  "bevy_render 0.8.1",
- "bevy_sprite",
+ "bevy_sprite 0.8.1",
  "bevy_text",
  "bevy_transform 0.8.1",
  "bevy_utils 0.8.1",
@@ -2912,8 +2938,19 @@ checksum = "20f42b3a59033b3372129b84850a6d39e02c25f3f170c4f8b84232b775602bb0"
 dependencies = [
  "bevy_app 0.8.1",
  "bevy_ecs 0.8.1",
- "bevy_time 0.8.1",
  "bevy_utils 0.8.1",
+]
+
+[[package]]
+name = "iyes_loopless"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c47fd2cbdb1d7f295c25e6bfccfd78a84b6eef3055bc9f01b34ae861721b01ee"
+dependencies = [
+ "bevy_app 0.9.0",
+ "bevy_ecs 0.9.0",
+ "bevy_time 0.9.0",
+ "bevy_utils 0.9.0",
 ]
 
 [[package]]
@@ -2924,7 +2961,17 @@ checksum = "9eaeccd2b11ae5271bf1fe04c94915b61cb1697fbba97dd313f5844381c57c38"
 dependencies = [
  "bevy_app 0.8.1",
  "bevy_ecs 0.8.1",
- "iyes_loopless",
+]
+
+[[package]]
+name = "iyes_progress"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "266c468795c5af070ab4c5fa01aca792a8f01f511e76feb9bea3878a1dbee144"
+dependencies = [
+ "bevy_app 0.9.0",
+ "bevy_ecs 0.9.0",
+ "iyes_loopless 0.9.1",
 ]
 
 [[package]]
@@ -4646,8 +4693,8 @@ dependencies = [
  "hierarchical_pathfinding",
  "if_chain",
  "image 0.24.5",
- "iyes_loopless",
- "iyes_progress",
+ "iyes_loopless 0.8.0",
+ "iyes_progress 0.6.0",
  "leafwing-input-manager",
  "noise",
  "winit",
