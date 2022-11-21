@@ -1,6 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 
-use bevy::{prelude::*, winit::WinitSettings};
+use bevy::{log::LogPlugin, prelude::*, winit::WinitSettings};
 use bevy_asset_loader::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use bevy_mouse_tracking_plugin::prelude::*;
@@ -46,6 +46,10 @@ pub fn app() -> App {
                     present_mode: bevy::window::PresentMode::AutoVsync,
                     ..default()
                 },
+                ..default()
+            })
+            .set(LogPlugin {
+                filter: "wgpu=error,bevy_ecs::event=error".to_string(),
                 ..default()
             })
             .set(ImagePlugin::default_nearest()),

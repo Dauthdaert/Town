@@ -15,6 +15,7 @@
 		10: "../features/stone_wall.ron",
 		11: "../features/wall.ron",
 		12: "../features/floor.ron",
-		13: "../features/door.ron"
+		13: "../features/door.ron",
+		14: "../features/road.ron"
 	}
 )

@@ -106,7 +106,16 @@ impl Map {
         if x >= self.width || y >= self.height {
             return -1;
         }
-        self.tiles[self.tile_xy_idx(x, y)].cost()
+        let idx = self.tile_xy_idx(x, y);
+        if_chain! {
+            if let Some(feature) = self.features[idx];
+            if let Some(cost) = feature.cost();
+            then {
+                cost
+            } else {
+                self.tiles[idx].cost()
+            }
+        }
     }
 
     pub fn is_passable(&self, x: u32, y: u32) -> bool {

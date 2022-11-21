@@ -85,16 +85,18 @@ pub struct JobCreationMenuManager;
 
 fn setup_job_manager(mut commands: Commands, manager_query: Query<Entity, With<JobCreationMenuManager>>) {
     if manager_query.is_empty() {
-        commands
-            .spawn_bundle(InputManagerBundle::<JobCreationControls> {
+        commands.spawn((
+            InputManagerBundle::<JobCreationControls> {
                 action_state: ActionState::default(),
                 input_map: InputMap::default()
                     .insert(KeyCode::Return, JobCreationControls::Select)
                     .insert(MouseButton::Left, JobCreationControls::Select)
                     .insert(KeyCode::Escape, JobCreationControls::Exit)
                     .build(),
-            })
-            .insert_bundle((JobCreationMenuManager, Name::from("Job Creation Menu Manager")));
+            },
+            JobCreationMenuManager,
+            Name::from("Job Creation Menu Manager"),
+        ));
     }
 }
 

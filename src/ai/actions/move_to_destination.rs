@@ -99,7 +99,8 @@ pub fn move_to_destination(
                 let (mut actor_transform, actor_destination, actor_speed) =
                     query.get_mut(*actor).expect("Actor has no position or destination.");
 
-                if let Some(next) = move_to.next.or_else(|| {
+                let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
+                if let Some(next_tile) = move_to.next.or_else(|| {
                     move_to
                         .path
                         .as_mut()
@@ -107,48 +108,42 @@ pub fn move_to_destination(
                         .next()
                         .map(|(x, y)| TilePos::new(x.try_into().unwrap(), y.try_into().unwrap()))
                 }) {
-                    if map.is_passable(next.x, next.y) {
-                        let next_pos = tile_xy_world_xy(next.x, next.y);
+                    if map.is_passable(next_tile.x, next_tile.y) {
+                        let next_pos = tile_xy_world_xy(next_tile.x, next_tile.y);
                         let actor_pos = actor_transform.translation.xy();
                         actor_transform.translation += calculate_step(
                             actor_pos,
                             next_pos,
                             actor_speed.speed,
-                            map.tile_cost(next.x, next.y),
+                            map.tile_cost(actor_tile.x, actor_tile.y),
                             time.delta_seconds(),
                         )
                         .extend(0.0);
 
                         if actor_transform.translation.xy() != next_pos {
-                            move_to.next = Some(next);
+                            move_to.next = Some(next_tile);
                         } else {
                             move_to.next = None;
                         }
-                    } else {
-                        let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
-                        if is_neighbor(&actor_tile, &actor_destination.destination) {
-                            //No problem, we've already arrived.
-                            *action_state = ActionState::Success;
-                        } else {
-                            warn!(
-                                "Next node in path was impassable. Going from {:?} to {:?}.",
-                                actor_tile, next
-                            );
-                            *action_state = ActionState::Failure;
-                        }
-                    }
-                } else {
-                    let actor_tile = world_xy_tile_xy(actor_transform.translation.xy());
-                    if is_neighbor(&actor_tile, &actor_destination.destination) {
+                    } else if is_neighbor(&actor_tile, &actor_destination.destination) {
                         //No problem, we've already arrived.
                         *action_state = ActionState::Success;
                     } else {
                         warn!(
-                            "Path contains no next node. Going from {:?} to {:?}.",
-                            actor_tile, actor_destination.destination
+                            "Next node in path was impassable. Going from {:?} to {:?}.",
+                            actor_tile, next_tile
                         );
                         *action_state = ActionState::Failure;
                     }
+                } else if is_neighbor(&actor_tile, &actor_destination.destination) {
+                    //No problem, we've already arrived.
+                    *action_state = ActionState::Success;
+                } else {
+                    warn!(
+                        "Path contains no next node. Going from {:?} to {:?}.",
+                        actor_tile, actor_destination.destination
+                    );
+                    *action_state = ActionState::Failure;
                 }
             }
             ActionState::Cancelled => {

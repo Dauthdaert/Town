@@ -9,8 +9,8 @@ use super::{job_creation::SelectionStart, JobCreationMenuAssets};
 pub struct JobCreationMenuCursor;
 
 pub fn setup_job_creation_menu_cursor(mut commands: Commands, job_creation_menu_assets: Res<JobCreationMenuAssets>) {
-    commands
-        .spawn_bundle(SpriteBundle {
+    commands.spawn((
+        SpriteBundle {
             texture: job_creation_menu_assets.cursor.clone(),
             transform: Transform {
                 translation: Vec2::ZERO.extend(2.),
@@ -22,8 +22,10 @@ pub fn setup_job_creation_menu_cursor(mut commands: Commands, job_creation_menu_
                 ..default()
             },
             ..default()
-        })
-        .insert_bundle((Name::from("Job Creation Menu Cursor"), JobCreationMenuCursor));
+        },
+        Name::from("Job Creation Menu Cursor"),
+        JobCreationMenuCursor,
+    ));
 }
 
 pub fn job_creation_menu_cursor_follow_mouse(

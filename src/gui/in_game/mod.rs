@@ -84,7 +84,7 @@ fn setup_in_game_ui(
     } else {
         let text_bundle = |content: &str, font_size: f32| ui_assets.text_bundle(content, font_size);
         let node = NodeBundle {
-            color: Color::NONE.into(),
+            background_color: Color::NONE.into(),
             style: style! {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
@@ -153,13 +153,8 @@ fn setup_in_game_ui(
                         }[InGameUiMenu::BuildMenu.to_menu(); build::InGameBuildUiRoot](
                             button {
                                 display: Display::None
-                            }[build::InGameBuildUiElem::BuildWallButton.to_button();](
-                                node[text_bundle("Wall", 20.0);]
-                            ),
-                            button {
-                                display: Display::None
-                            }[build::InGameBuildUiElem::BuildFloorButton.to_button();](
-                                node[text_bundle("Floor", 20.0);]
+                            }[build::InGameBuildUiElem::BuildRoadButton.to_button();](
+                                node[text_bundle("Road", 20.0);]
                             ),
                             button {
                                 display: Display::None
