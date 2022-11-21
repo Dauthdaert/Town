@@ -40,7 +40,7 @@ pub enum JobCreation {
     BuildRoom,
 }
 
-#[derive(Clone, Copy, Debug, Deref)]
+#[derive(Resource, Clone, Copy, Debug, Deref)]
 pub struct JobSelectionType(pub JobCreation);
 
 #[derive(Actionlike, Clone, Debug, Copy, PartialEq, Eq)]
@@ -49,7 +49,7 @@ pub enum JobCreationControls {
     Exit,
 }
 
-#[derive(AssetCollection)]
+#[derive(Resource, AssetCollection)]
 pub struct JobCreationMenuAssets {
     #[asset(path = "textures/cursor.png")]
     pub cursor: Handle<Image>,
@@ -85,16 +85,18 @@ pub struct JobCreationMenuManager;
 
 fn setup_job_manager(mut commands: Commands, manager_query: Query<Entity, With<JobCreationMenuManager>>) {
     if manager_query.is_empty() {
-        commands
-            .spawn_bundle(InputManagerBundle::<JobCreationControls> {
+        commands.spawn((
+            InputManagerBundle::<JobCreationControls> {
                 action_state: ActionState::default(),
                 input_map: InputMap::default()
                     .insert(KeyCode::Return, JobCreationControls::Select)
                     .insert(MouseButton::Left, JobCreationControls::Select)
                     .insert(KeyCode::Escape, JobCreationControls::Exit)
                     .build(),
-            })
-            .insert_bundle((JobCreationMenuManager, Name::from("Job Creation Menu Manager")));
+            },
+            JobCreationMenuManager,
+            Name::from("Job Creation Menu Manager"),
+        ));
     }
 }
 

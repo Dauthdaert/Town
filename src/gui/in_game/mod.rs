@@ -84,7 +84,7 @@ fn setup_in_game_ui(
     } else {
         let text_bundle = |content: &str, font_size: f32| ui_assets.text_bundle(content, font_size);
         let node = NodeBundle {
-            color: Color::NONE.into(),
+            background_color: Color::NONE.into(),
             style: style! {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,

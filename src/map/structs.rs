@@ -1,4 +1,4 @@
-use bevy::prelude::Vec2;
+use bevy::prelude::{Resource, Vec2};
 use bevy_ecs_tilemap::tiles::TilePos;
 use hierarchical_pathfinding::{internals::AbstractPath, PathCache, PathCacheConfig};
 use if_chain::if_chain;
@@ -20,6 +20,7 @@ fn cost_fn(map: &Map) -> impl '_ + Sync + Fn((usize, usize)) -> isize {
     }
 }
 
+#[derive(Resource)]
 pub struct MapPathfinding {
     pub path_cache: PathCache<EuclideanNeighborhood>,
 }
@@ -58,7 +59,7 @@ impl MapPathfinding {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Resource, Clone, Debug)]
 pub struct Map {
     pub tiles: Vec<Biomes>,
     pub features: Vec<Option<Features>>,

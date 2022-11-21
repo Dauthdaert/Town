@@ -37,7 +37,7 @@ fn setup_splash_ui(
             ..default()
         };
         let node = NodeBundle {
-            color: Color::NONE.into(),
+            background_color: Color::NONE.into(),
             style: style! {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,

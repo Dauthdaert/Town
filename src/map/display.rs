@@ -26,13 +26,10 @@ pub fn spawn_tiles(
 
         let tileset = tilesets.get_by_name("Tiles").expect("Tiles tileset should be loaded.");
 
-        let tilemap_entity = commands
-            .spawn()
-            .insert_bundle((Name::from("Tile Layer"), TileLayer))
-            .id();
+        let tilemap_entity = commands.spawn((Name::from("Tile Layer"), TileLayer)).id();
 
         for (idx, tile_biome) in map.tiles.iter().enumerate() {
-            let mut tile_builder = commands.spawn();
+            let mut tile_builder = commands.spawn_empty();
 
             let (tile_index, tile_data) = tileset
                 .select_tile(tile_biome.tile_name())
@@ -68,18 +65,21 @@ pub fn spawn_tiles(
 
             let tile_pos = map.idx_tile_xy(idx);
             let tile_entity = tile_builder
-                .insert_bundle(TileBundle {
-                    position: tile_pos,
-                    tilemap_id: TilemapId(tilemap_entity),
-                    texture_index,
-                    ..default()
-                })
-                .insert_bundle((Name::from("Tile"), TileLayerObject))
+                .insert((
+                    TileBundle {
+                        position: tile_pos,
+                        tilemap_id: TilemapId(tilemap_entity),
+                        texture_index,
+                        ..default()
+                    },
+                    Name::from("Tile"),
+                    TileLayerObject,
+                ))
                 .id();
             tile_storage.set(&tile_pos, tile_entity);
         }
 
-        commands.entity(tilemap_entity).insert_bundle(TilemapBundle {
+        commands.entity(tilemap_entity).insert(TilemapBundle {
             grid_size: TILE_SIZE.into(),
             size: tilemap_size,
             storage: tile_storage,
@@ -109,10 +109,7 @@ pub fn spawn_features(
             .get_by_name("Features")
             .expect("Features tileset should be loaded.");
 
-        let features_entity = commands
-            .spawn()
-            .insert_bundle((Name::from("Feature Layer"), FeatureLayer))
-            .id();
+        let features_entity = commands.spawn((Name::from("Feature Layer"), FeatureLayer)).id();
 
         for (idx, feature) in map.features.iter().enumerate() {
             if let Some(feature) = feature {
@@ -129,12 +126,12 @@ pub fn spawn_features(
                     .map(|(tile_index, tile_data)| (tile_index, tile_data.is_auto(), group_id, tileset_id))
                     .unwrap_or_else(|| panic!("Feature {} should exist.", feature_name));
 
-                let feature_entity = fill_feature(&mut commands.spawn(), parent, tile, feature, feature_pos);
+                let feature_entity = fill_feature(&mut commands.spawn_empty(), parent, tile, feature, feature_pos);
                 feature_storage.set(&feature_pos, feature_entity);
             }
         }
 
-        commands.entity(features_entity).insert_bundle(TilemapBundle {
+        commands.entity(features_entity).insert(TilemapBundle {
             grid_size: TILE_SIZE.into(),
             size: feature_map_size,
             storage: feature_storage,
@@ -175,7 +172,7 @@ impl<'w, 's> FeatureQuery<'w, 's> {
             .map(|(tile_index, tile_data)| (tile_index, tile_data.is_auto(), group_id, tileset_id))
             .unwrap_or_else(|| panic!("Feature {} should exist.", feature_name));
 
-        let mut feature_builder = self.commands.spawn();
+        let mut feature_builder = self.commands.spawn_empty();
         let feature_entity = fill_feature(&mut feature_builder, parent, tile, &feature, feature_pos);
         self.feature_storage.single_mut().set(&feature_pos, feature_entity);
     }
@@ -276,15 +273,8 @@ fn fill_feature(
     };
 
     if is_auto {
-        feature_builder.insert_bundle((AutoTileId { group_id, tileset_id }, feature.auto_tile_category()));
+        feature_builder.insert((AutoTileId { group_id, tileset_id }, feature.auto_tile_category()));
     }
-
-    feature_builder.insert_bundle(TileBundle {
-        position: feature_pos,
-        tilemap_id: TilemapId(parent),
-        texture_index,
-        ..default()
-    });
 
     if feature.is_obstacle() {
         feature_builder.insert(super::components::Obstacle);
@@ -299,6 +289,15 @@ fn fill_feature(
     }
 
     feature_builder
-        .insert_bundle((Name::from("Feature"), FeatureLayerObject))
+        .insert((
+            TileBundle {
+                position: feature_pos,
+                tilemap_id: TilemapId(parent),
+                texture_index,
+                ..default()
+            },
+            Name::from("Feature"),
+            FeatureLayerObject,
+        ))
         .id()
 }

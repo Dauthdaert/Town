@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use super::Jobs;
+use bevy::prelude::Resource;
 use bevy_ecs_tilemap::prelude::*;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -15,7 +16,7 @@ impl Job {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Resource, Debug, Clone, Default)]
 pub struct JobQueue {
     pub jobs: VecDeque<Job>,
 }

@@ -31,8 +31,8 @@ pub fn spawn_ai(
 ) -> Progress {
     for i in *next_ai_id..u32::min(*next_ai_id + 100, NUM_AI) {
         let pos_offset = crate::map::tile_xy_world_xy(map.width / 2, map.height / 2);
-        commands
-            .spawn_bundle(SpriteSheetBundle {
+        commands.spawn((
+            SpriteSheetBundle {
                 sprite: TextureAtlasSprite::new(0),
                 texture_atlas: sprite_assets.villager.clone(),
                 transform: Transform {
@@ -40,16 +40,15 @@ pub fn spawn_ai(
                     ..default()
                 },
                 ..default()
-            })
-            .insert_bundle((
-                Thirst::new(0.0, 0.1 * SIMULATION_SPEED),
-                Speed::new(1. * TILE_SIZE.x * SIMULATION_SPEED),
-                JobSeeker,
-                build_thinker(),
-                Name::from(format!("Villager {}", i)),
-                RngComponent::from(&mut rng),
-                AnimationTimer(Timer::from_seconds(0.5, true)),
-            ));
+            },
+            Thirst::new(0.0, 0.1 * SIMULATION_SPEED),
+            Speed::new(1. * TILE_SIZE.x * SIMULATION_SPEED),
+            JobSeeker,
+            build_thinker(),
+            Name::from(format!("Villager {}", i)),
+            RngComponent::from(&mut rng),
+            AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)),
+        ));
 
         *next_ai_id += 1;
     }

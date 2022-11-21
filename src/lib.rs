@@ -1,6 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 
-use bevy::{prelude::*, render::texture::ImageSettings, window::PresentMode, winit::WinitSettings};
+use bevy::{log::LogPlugin, prelude::*, winit::WinitSettings};
 use bevy_asset_loader::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use bevy_mouse_tracking_plugin::prelude::*;
@@ -32,22 +32,31 @@ pub fn app() -> App {
     let mut app = App::new();
 
     //Add bevy resources
-    app.insert_resource(WindowDescriptor {
-        title: LAUNCHER_TITLE.to_string(),
-        canvas: Some("#bevy".to_string()),
-        fit_canvas_to_parent: true,
-        present_mode: PresentMode::AutoVsync,
-        ..Default::default()
-    })
-    .insert_resource(WinitSettings::game())
-    .insert_resource(ImageSettings::default_nearest())
-    .insert_resource(Msaa { samples: 1 });
+    app.insert_resource(WinitSettings::game())
+        .insert_resource(Msaa { samples: 1 });
 
     //Add bevy and dependency plugins
-    app.add_plugins(DefaultPlugins)
-        .add_plugin(TilemapPlugin)
-        .add_plugin(MousePosPlugin)
-        .add_plugin(RngPlugin::default());
+    app.add_plugins(
+        DefaultPlugins
+            .set(WindowPlugin {
+                window: WindowDescriptor {
+                    title: LAUNCHER_TITLE.to_string(),
+                    canvas: Some("#bevy".to_string()),
+                    fit_canvas_to_parent: true,
+                    present_mode: bevy::window::PresentMode::AutoVsync,
+                    ..default()
+                },
+                ..default()
+            })
+            .set(LogPlugin {
+                filter: "wgpu=error,bevy_ecs::event=error".to_string(),
+                ..default()
+            })
+            .set(ImagePlugin::default_nearest()),
+    )
+    .add_plugin(TilemapPlugin)
+    .add_plugin(MousePosPlugin)
+    .add_plugin(RngPlugin::default());
 
     #[cfg(debug_assertions)]
     {

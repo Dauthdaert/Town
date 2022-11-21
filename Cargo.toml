@@ -52,23 +52,23 @@ dev = [
 ]
 
 [dependencies]
-bevy = { version = "0.8.*", default-features = false }
-iyes_loopless = { version = "0.8.*", default-features = false }
-iyes_progress = "0.6.*"
+bevy = { version = "0.9.*", default-features = false }
+iyes_loopless = { version = "0.9.*", default-features = false }
+iyes_progress = "0.7.*"
 bevy_kira_audio = "0.13.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
-bevy_tileset = { version = "0.5.0", default-features = false }
-leafwing-input-manager = "0.6.*"
-bevy-inspector-egui = "0.13.*"
-bevy_turborand = "0.3.*"
-bevy_asset_loader = "0.13.*"
-big-brain = { git = "https://github.com/Dauthdaert/big-brain.git" }
-bevy_mouse_tracking_plugin = "0.4.*"
+bevy_tileset = { version = "0.6.0", default-features = false }
+leafwing-input-manager = "0.7.*"
+bevy-inspector-egui = "0.14.*"
+bevy_turborand = "0.4.*"
+bevy_asset_loader = "0.14.*"
+big-brain = { git = "https://github.com/zkat/big-brain.git" }
+bevy_mouse_tracking_plugin = { git = "https://github.com/JoJoJet/bevy-mouse-tracking.git", branch = "09" }
 hierarchical_pathfinding = { git = "https://github.com/mich101mich/hierarchical_pathfinding.git" }
 if_chain = "1.0.2"
 futures-lite = "1.12.0"
 noise = { git = "https://github.com/Razaekel/noise-rs.git" }
 image = "0.24.5"
-winit = "0.26.1"
-bevy-ui-navigation = "0.21.0"
-bevy-ui-build-macros = "0.4.0"
+winit = "0.27.5"
+bevy-ui-navigation = "0.22.*"
+bevy-ui-build-macros = { git = "https://github.com/Dauthdaert/bevy-ui-build-macros.git" }
