@@ -71,4 +71,4 @@ noise = { git = "https://github.com/Razaekel/noise-rs.git" }
 image = "0.24.5"
 winit = "0.27.5"
 bevy-ui-navigation = "0.22.*"
-bevy-ui-build-macros = { git = "https://github.com/Dauthdaert/bevy-ui-build-macros.git" }
+bevy-ui-build-macros = "0.5.*"
