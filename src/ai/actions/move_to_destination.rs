@@ -156,8 +156,8 @@ pub fn move_to_destination(
 
 fn calculate_step(start_pos: Vec2, end_pos: Vec2, speed: f32, tile_cost: isize, dt: f32) -> Vec2 {
     let delta = end_pos - start_pos;
-    let distance = delta.length() * (tile_cost as f32 / 100.0);
-    let step_size = dt * speed;
+    let distance = delta.length();
+    let step_size = dt * speed / (tile_cost as f32 / 100.0);
     if distance > step_size {
         delta / distance * step_size
     } else {
