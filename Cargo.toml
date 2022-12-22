@@ -47,10 +47,6 @@ default = [
     "bevy_tileset/auto-tile"
 ]
 
-dev = [
-    "bevy/dynamic",
-]
-
 [dependencies]
 bevy = { version = "0.9.*", default-features = false }
 iyes_loopless = { version = "0.9.*", default-features = false }
