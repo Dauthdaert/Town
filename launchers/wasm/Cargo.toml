@@ -8,5 +8,5 @@ workspace = "../.."
 town = { package = "town", path = "../.." }
 bevy = { version = "0.9", default-features = false }
 web-sys = { version="0.3.60", features=["Document", "Window"] }
-yew = "0.19.3"
+yew = "0.21.0"
 stylist = { version= "0.10.1", features=["yew_integration"] }
