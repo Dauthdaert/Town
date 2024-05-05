@@ -278,9 +278,9 @@ dependencies = [
 
 [[package]]
 name = "bevy-ui-build-macros"
-version = "0.5.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54aaa440bf981c44715305fcc6fab9d2df141fad5f3b961d4cdf321d8eec16d9"
+checksum = "dc729a51483480acb41a67d01c2320dc022a7b613e8457525736447653d12ef2"
 
 [[package]]
 name = "bevy-ui-navigation"
