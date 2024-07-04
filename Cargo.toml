@@ -48,7 +48,7 @@ default = [
 ]
 
 [dependencies]
-bevy = { version = "0.9.*", default-features = false }
+bevy = { version = "0.14.*", default-features = false }
 iyes_loopless = { version = "0.9.*", default-features = false }
 iyes_progress = "0.7.*"
 bevy_kira_audio = "0.13.*"
