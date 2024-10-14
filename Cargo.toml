@@ -55,7 +55,7 @@ bevy_kira_audio = "0.13.*"
 bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
 bevy_tileset = { version = "0.6.0", default-features = false }
 leafwing-input-manager = "0.7.*"
-bevy-inspector-egui = "0.14.*"
+bevy-inspector-egui = "0.27.*"
 bevy_turborand = "0.4.*"
 bevy_asset_loader = "0.14.*"
 big-brain = { git = "https://github.com/zkat/big-brain.git" }
